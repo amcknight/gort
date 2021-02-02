@@ -16,7 +16,7 @@ bot = commands.Bot(
     initial_channels=[os.environ['CHANNEL']]
 )
 
-history = ['mangort: Hi guys, this is robogort.', 'robogort: Hi everyone, how can I help you?']
+history = ['mangort: Hi guys, this is {bot.nick}.', '{bot.nick}: Hi everyone, how can I help you?']
 
 active = True
 
@@ -25,7 +25,7 @@ first_message = '/me arrived HeyGuys'
 @bot.event
 async def event_ready():
     'Called once when the bot goes online.'
-    print(f"{os.environ['BOT_NICK']} is online!")
+    print(f"{bot.nick} is online!")
     ws = bot._ws  # this is only needed to send messages within event_ready
     await ws.send_privmsg(os.environ['CHANNEL'], first_message)
 
@@ -46,25 +46,23 @@ async def event_message(ctx):
     if ctx.author.name.lower() == os.environ['BOT_NICK'].lower():
         return
 
-    # if content[-1] == '?':
-    #     answer = ask(content)
-    #     if answer:
-    #         await ctx.channel.send(f'@{author} {answer}')
-    if 'robogort' in content or content[-1] == '?':
-    #if 'robogort' in content:
+    if bot.nick.lower() in content.lower():
         response = respond(history[1:], author)
-        msg = f'@{author} {response}'
+        if author in response.lower():
+            msg = response
+        else:
+            msg = f'{response} @{author}'
         time.sleep(len(response)*0.04)
         await ctx.channel.send(msg)
 
     await bot.handle_commands(ctx)
 
-@bot.command()
-async def robogort(ctx):
-    global active
-    if not active:
-        return
-    await ctx.send('HeyGuys I\'m mangort\'s robot and I\'m doing my best. I answer questions but know nothing after Oct 2019 and have no short term memory because mangort hates me and didn\'t build it! :(')
+# @bot.command()
+# async def robogort(ctx):
+#     global active
+#     if not active:
+#         return
+#     await ctx.send('HeyGuys I\'m mangort\'s robot and I\'m doing my best. I answer questions but know nothing after Oct 2019 and have no short term memory because mangort hates me and didn\'t build it! :(')
 
 # @bot.command()
 # async def leave(ctx):
@@ -102,7 +100,7 @@ async def reset(ctx):
 
 @bot.event
 async def event_error(error, data):
-    print("ERRORRING")
+    print("ERRORRRING")
     traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
 
 if __name__ == "__main__":

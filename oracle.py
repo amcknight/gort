@@ -1,6 +1,6 @@
 import openai
 
-respond_preamble = 'This is an ongoing intelligent and fun conversation happening on a twitch stream chat. The streamer is mangort and is playing Super Mario World romhacks. robogort is mangort\'s polite and honest comedian robot. This is the transcript:'
+respond_preamble = 'This is an ongoing intelligent and fun conversation happening on a twitch stream chat. This is the transcript:'
 
 preamble = 'My name is \'robogort\' and I am an honest and highly intelligent Super Mario World Romhack question answering bot. I will answer questions as truthfully as possible in a single sentence. If you ask me a question I am unsure about, is nonsense, or has no clear answer, I will respond with "PASS".'
 question_prefix = 'Q:'
@@ -16,9 +16,22 @@ qa_pairs = [
     ['WHo is Dram?','dram55 is an American speedrunner known as the first person to complete Kaizo Mario World deathless.']
 ]
 
+beliefs = [
+    'Grand Poo World 2 is harder than Akogare.',
+    '@robogort is a robot.',
+    '@robogort is 2 feet tall, has a bronze finish, and alightning fast internet connection.',
+    '@mangort is playing Hyperion which was made by AmperSam.',
+    '@robogort just started dating a Smart Toaster named X78-3000.',
+    'Being direct and honest is the best way to communicate.',
+    'When someone asks a question, it is rude to not answer.',
+    '@robogort has big eyes and a small mouth.',
+    'X78-3000 is the most beautiful robot @robogort has ever met.',
+    '@robogort is a polite, honest, question answering, comedian robot.'
+]
+
 last_ask = [None, None]
 
-max_tokens = 30
+max_tokens = 40
 
 def preprompt():
     prom = preamble + '\n\n'
@@ -52,14 +65,26 @@ def extract_answer_line(raw_answer):
 
     return trimmed_raw_answer[0:min_i] + first_d
 
-def extract_response_line(raw_response):
-    response_line = raw_response.split('\n')[0]
-    if len(response_line) < 150:
-        return response_line
-    
-    trunc_index = max(response_line.rfind(i) for i in '.!?')
-    return response_line[:trunc_index]
+def min_stop_index(text, ignore_prefix):
+    index = min(filter(lambda i : i > -1, (text[ignore_prefix:].find(i) for i in '.!?')))
+    if index:
+        return index + ignore_prefix
+    return
 
+def stop_index(text):
+    late_index = min_stop_index(text, 12)
+    if late_index:
+        return late_index
+
+    index = min_stop_index(text, 0)
+    if index:
+        return index
+
+    return -1
+
+def extract_response_line(raw_response):
+    trimmed_response = raw_response.split('\n')[0].strip()
+    return trimmed_response[:stop_index(trimmed_response)+1]
 
 def ask(question):
     global last_ask
@@ -68,20 +93,28 @@ def ask(question):
     if not answer:
         return
     last_ask = [question, answer]
-    if answer.startswith('PASS') or answer.startswith('pass') or answer.startswith('Pass') or len(answer) < 2:
+    if answer.lower().startswith('pass') or len(answer) < 2:
         return
     
     return answer
 
-def respond(history, author):
-    truncated_history = '\n'.join(history + [f'robogort: @{author}'])[-400:]
-    prompt = respond_preamble + '\n\n' + truncated_history
-    raw_response = complete(prompt)
-    return extract_response_line(raw_response)
+def respond(history, author, attempts=2):
+    belief_str = '\n'.join(beliefs)
+    truncated_history = '\n'.join(history + [f'robogort:'])[-500:]
+    prompt = "ROBOGORT'S BELIEFS:\n" + belief_str + "\n\nTRUNCATED TRANSCRIPT:\n" + truncated_history
+    attempts_left = attempts
+    while attempts_left > 0:
+        raw_response = complete(prompt)
+        line = extract_response_line(raw_response)
+        print("LINE: '" + line + "'")
+        if line:
+            return line
+        attempts_left -= 1
+    return
 
 def complete(prompt):
+    # The main prompt completer
     global max_tokens
     response = openai.Completion.create(engine="curie", prompt=prompt, max_tokens=max_tokens)
-    print(response)
-    exit
-    return response.choices[0].text
+    text = response.choices[0].text
+    return text
