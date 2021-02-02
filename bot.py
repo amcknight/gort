@@ -5,7 +5,7 @@ from twitchio.ext import commands
 from oracle import ask, respond
 
 import logging
-logging.basicConfig(filename='everything.log', encoding='utf-8', level=logging.DEBUG)
+logging.basicConfig(filename='everything.log', level=logging.DEBUG)
 
 bot = commands.Bot(
     # set up the bot
