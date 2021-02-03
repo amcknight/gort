@@ -19,7 +19,7 @@ bot = commands.Bot(
 history = [f'mangort: Hi guys, this is {bot.nick}.', f'{bot.nick}: Hi everyone, how can I help you?']
 
 active = True
-is_chatting = ['mangort']
+chatters = []
 
 first_message = '/me arrived HeyGuys'
 
@@ -33,7 +33,7 @@ def add_history(content, author):
         history += [f'{author}: {content}']
 
 def should_free_respond(content, author):
-    return active and author in is_chatting or bot.nick.lower() in content.lower()
+    return active and author in chatters or bot.nick.lower() in content.lower()
 
 @bot.event
 async def event_ready():
@@ -85,15 +85,17 @@ async def robogort(ctx):
 
 @bot.command()
 async def commands(ctx):
-    await ctx.send("Commands: !leave -> I'll leave the room, !enter -> I'll enter the room, !hi -> I'll respond to everything you say without you calling my name, !bye -> I'll only respond to you when you use my name, !reset I'll wipe my short term memory")
+    await ctx.send("Commands: !leave -> I'll leave the room, !enter -> I'll enter the room, !chat -> I'll respond to everything you say without you calling my name, !unchat -> I'll only respond to you when you use my name, !reset I'll wipe my short term memory")
 
 @bot.command()
 async def leave(ctx):
     global active
+    global chatters
     if not active:
-        await ctx.send(f"/me (I'm not here)")
+        await ctx.send(f"/me isn't here, @{ctx.author.name}")
     else:
         await ctx.send(f'/me I\'m out. peepoLeave')
+        chatters = []
     active = False
 
 @bot.command()
@@ -106,12 +108,43 @@ async def enter(ctx):
         active = True
 
 @bot.command()
-async def talk(ctx):
+async def chat(ctx):
     global active
+    author = ctx.author.name
     if not active:
+        await ctx.send(f"/me isn't here, @{author}")
         return
-    response = respond(history, ctx.author.name)
-    await ctx.channel.send(response)
+
+    global chatters
+    if author in chatters:
+        await ctx.send(f"You've already approached me, @{author}. Back up a bit! LUL")
+    else:
+        chatters.append(author)
+        await ctx.send(f"/me and {author} gathered")
+
+@bot.command()
+async def unchat(ctx):
+    global active
+    author = ctx.author.name
+    if not active:
+        await ctx.send(f"/me isn't here, @{author}")
+        return
+
+    global chatters
+    if author in chatters:
+        chatters.remove(author)
+        await ctx.send(f"/me and {author} disbanded")
+    else:
+        await ctx.send(f"You've already approached me, @{author}. Back up a bit! LUL")
+
+@bot.command()
+async def chatting(ctx):
+    if len(chatters) < 1:
+        await ctx.send(f"/me isn't chatting")
+    elif len(chatters) == 1:
+        await ctx.send(f"/me is chatting with {chatters[0]}")
+    else:
+        await ctx.send(f"/me is chatting with {', '.join(chatters[:-1])}, and {chatters[-1]}")
 
 @bot.command()
 async def reset(ctx):
