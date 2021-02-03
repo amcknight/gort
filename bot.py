@@ -5,7 +5,7 @@ from twitchio.ext import commands
 from oracle import ask, respond
 
 import logging
-logging.basicConfig(filename='everything.log', level=logging.DEBUG)
+logging.basicConfig(filename='everything.log', level=logging.INFO)
 
 bot = commands.Bot(
     # set up the bot
@@ -16,11 +16,24 @@ bot = commands.Bot(
     initial_channels=[os.environ['CHANNEL']]
 )
 
-history = ['mangort: Hi guys, this is {bot.nick}.', '{bot.nick}: Hi everyone, how can I help you?']
+history = [f'mangort: Hi guys, this is {bot.nick}.', f'{bot.nick}: Hi everyone, how can I help you?']
 
 active = True
+is_chatting = ['mangort']
 
 first_message = '/me arrived HeyGuys'
+
+def is_command(content):
+    # chr(1) is a Start of Header character that shows up invisibly in /me ACTIONs
+    return content[0] in '!/' or content.startswith(chr(1)+'ACTION ')
+
+def add_history(content, author):
+    global history
+    if not is_command(content):
+        history += [f'{author}: {content}']
+
+def should_free_respond(content, author):
+    return active and author in is_chatting or bot.nick.lower() in content.lower()
 
 @bot.event
 async def event_ready():
@@ -31,7 +44,7 @@ async def event_ready():
 
 @bot.event
 async def event_raw_data(data):
-    logging.debug(data)
+    logging.info(data)
 
 @bot.event
 async def event_message(ctx):
@@ -40,53 +53,64 @@ async def event_message(ctx):
 
     content = ctx.content
     author = ctx.author.name
-    if content != first_message and content[0] != '!':
-        history += [f'{author}: {content}']
 
-    if ctx.author.name.lower() == os.environ['BOT_NICK'].lower():
+    add_history(content, author)
+
+    if author.lower() == bot.nick.lower():
         return
 
-    if bot.nick.lower() in content.lower():
+    if is_command(content):
+        await bot.handle_commands(ctx)
+        return
+
+    if should_free_respond(content, author):
         response = respond(history[1:], author)
-        if author in response.lower():
-            msg = response
+        if response:
+            if author in response.lower():
+                msg = response
+            else:
+                msg = f'{response} @{author}'
+            time.sleep(len(response)*0.04)
+            await ctx.channel.send(msg)
         else:
-            msg = f'{response} @{author}'
-        time.sleep(len(response)*0.04)
-        await ctx.channel.send(msg)
+            await ctx.channel.send(':|')
 
-    await bot.handle_commands(ctx)
+@bot.command()
+async def robogort(ctx):
+    global active
+    if not active:
+        return
+    await ctx.send("Hi @{ctx.author.name}! I'm mangort's robot. I'll respond to you when you use my name. I'm trained on the ENTIRE internet so can get pretty offensive. Mangort is working on fixing that but hasn't yet so be warned!. Type !commands to see what I can do.")
 
-# @bot.command()
-# async def robogort(ctx):
-#     global active
-#     if not active:
-#         return
-#     await ctx.send('HeyGuys I\'m mangort\'s robot and I\'m doing my best. I answer questions but know nothing after Oct 2019 and have no short term memory because mangort hates me and didn\'t build it! :(')
 
-# @bot.command()
-# async def leave(ctx):
-#     global active
-#     if not active:
-#         return
-#     await ctx.send(f'/me I\'m out. peepoLeave')
-#     active = False
+@bot.command()
+async def commands(ctx):
+    await ctx.send("Commands: !leave -> I'll leave the room, !enter -> I'll enter the room, !hi -> I'll respond to everything you say without you calling my name, !bye -> I'll only respond to you when you use my name, !reset I'll wipe my short term memory")
 
-# @bot.command()
-# async def enter(ctx):
-#     global active
-#     if active:
-#         await ctx.send(f'OOOO {ctx.author.name} OOOO')
-#     else:
-#         await ctx.send(f"/me I'm back peepoArrive")
-#         active = True
+@bot.command()
+async def leave(ctx):
+    global active
+    if not active:
+        await ctx.send(f"/me (I'm not here)")
+    else:
+        await ctx.send(f'/me I\'m out. peepoLeave')
+    active = False
+
+@bot.command()
+async def enter(ctx):
+    global active
+    if active:
+        await ctx.send(f"/me OOOO I'm already here! OOOO")
+    else:
+        await ctx.send(f"/me I'm back peepoArrive")
+        active = True
 
 @bot.command()
 async def talk(ctx):
     global active
     if not active:
         return
-    response = respond(history[1:])
+    response = respond(history, ctx.author.name)
     await ctx.channel.send(response)
 
 @bot.command()
@@ -100,8 +124,8 @@ async def reset(ctx):
 
 @bot.event
 async def event_error(error, data):
-    print("ERRORRRING")
-    traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
+    print("ERRORRRING: Need to learn from this event and act on it")
+    print(error)
 
 if __name__ == "__main__":
     bot.run()

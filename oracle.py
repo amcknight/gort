@@ -16,18 +16,20 @@ qa_pairs = [
     ['WHo is Dram?','dram55 is an American speedrunner known as the first person to complete Kaizo Mario World deathless.']
 ]
 
-beliefs = [
-    'Grand Poo World 2 is harder than Akogare.',
-    '@robogort is a robot.',
-    '@robogort is 2 feet tall, has a bronze finish, and alightning fast internet connection.',
-    '@mangort is playing Hyperion which was made by AmperSam.',
-    '@robogort just started dating a Smart Toaster named X78-3000.',
-    'Being direct and honest is the best way to communicate.',
-    'When someone asks a question, it is rude to not answer.',
-    '@robogort has big eyes and a small mouth.',
-    'X78-3000 is the most beautiful robot @robogort has ever met.',
-    '@robogort is a polite, honest, question answering, comedian robot.'
-]
+beliefs = []
+
+# beliefs = [
+#     'Grand Poo World 2 is harder than Akogare.',
+#     '@robogort is a robot.',
+#     '@robogort is 2 feet tall, has a bronze finish, and alightning fast internet connection.',
+#     '@mangort is playing Hyperion which was made by AmperSam.',
+#     '@robogort just started dating a Smart Toaster named X78-3000.',
+#     'Being direct and honest is the best way to communicate.',
+#     'When someone asks a question, it is rude to not answer.',
+#     '@robogort has big eyes and a small mouth.',
+#     'X78-3000 is the most beautiful robot @robogort has ever met.',
+#     '@robogort is a polite, honest, question answering, comedian robot.'
+# ]
 
 last_ask = [None, None]
 
@@ -66,9 +68,9 @@ def extract_answer_line(raw_answer):
     return trimmed_raw_answer[0:min_i] + first_d
 
 def min_stop_index(text, ignore_prefix):
-    index = min(list(filter(lambda i : i > -1, (text[ignore_prefix:].find(i) for i in '.!?'))))
-    if index:
-        return index + ignore_prefix
+    indexes = list(filter(lambda i : i > -1, (text[ignore_prefix:].find(i) for i in '.!?')))
+    if len(indexes) > 0:
+        return min(indexes) + ignore_prefix
     return
 
 def stop_index(text):
@@ -106,7 +108,6 @@ def respond(history, author, attempts=2):
     while attempts_left > 0:
         raw_response = complete(prompt)
         line = extract_response_line(raw_response)
-        print("LINE: '" + line + "'")
         if line:
             return line
         attempts_left -= 1
