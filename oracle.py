@@ -66,7 +66,7 @@ def extract_answer_line(raw_answer):
     return trimmed_raw_answer[0:min_i] + first_d
 
 def min_stop_index(text, ignore_prefix):
-    index = min(filter(lambda i : i > -1, (text[ignore_prefix:].find(i) for i in '.!?')))
+    index = min(list(filter(lambda i : i > -1, (text[ignore_prefix:].find(i) for i in '.!?'))))
     if index:
         return index + ignore_prefix
     return
