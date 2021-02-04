@@ -1,0 +1,13 @@
+[Unit]
+Description=Robogort
+After=network.target
+
+[Service]
+User=ec2-user
+Restart=always
+Type=simple
+WorkingDirectory=/home/ec2-user/git/gortbot
+ExecStart=/usr/local/bin/pipenv run python3 bot.py
+
+[Install]
+WantedBy=multi-user.target
