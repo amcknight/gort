@@ -21,7 +21,7 @@ history = [f'mangort: Hi guys, this is {bot.nick}.', f'{bot.nick}: Hi everyone, 
 active = True
 chatters = []
 
-first_message = '/me arrived HeyGuys'
+first_message = 'HeyGuys'
 
 def is_command(content):
     # chr(1) is a Start of Header character that shows up invisibly in /me ACTIONs
