@@ -72,6 +72,11 @@ class Bot(commands.Bot):
         else:
             await ctx.channel.send(':|')
 
+    async def event_join(self, channel, user):
+        if channel.name == 'mangort':
+            if user.name.startswith('manofsteel'):
+                await channel.send(f'/ban {user.name} auto-ban due to thousands of previous micro-harassments')
+
     @commands.command()
     async def r(self, ctx):
         if not self.active:
@@ -99,7 +104,7 @@ class Bot(commands.Bot):
     @commands.command()
     async def leave(self, ctx):
         if not self.active:
-            await ctx.send(f"/me isn't here, @{ctx.author.name}")
+            await ctx.send(f"/me isn't here, {ctx.author.name}")
         else:
             await ctx.send(f'/me I\'m out. peepoLeave')
             self.chatters = []
@@ -109,11 +114,11 @@ class Bot(commands.Bot):
     async def chat(self, ctx):
         author = ctx.author.name
         if not self.active:
-            await ctx.send(f"/me isn't here, @{author}")
+            await ctx.send(f"/me isn't here, {author}")
             return
 
         if author in self.chatters:
-            await ctx.send(f"You've already approached me, @{author}. Back up a bit! LUL")
+            await ctx.send(f"You've already approached me, {author}. Back up a bit! LUL")
         else:
             self.chatters.append(author)
             await ctx.send(f"/me and {author} gathered")
@@ -122,14 +127,14 @@ class Bot(commands.Bot):
     async def unchat(self, ctx):
         author = ctx.author.name
         if not self.active:
-            await ctx.send(f"/me isn't here, @{author}")
+            await ctx.send(f"/me isn't here, {author}")
             return
 
         if author in self.chatters:
             self.chatters.remove(author)
             await ctx.send(f"/me and {author} disbanded")
         else:
-            await ctx.send(f"You've already approached me, @{author}. Back up a bit! LUL")
+            await ctx.send(f"You're not even near me, {author}. Don't worry, we're not chatting! LUL")
 
     async def chatting(self, ctx):
         if len(self.chatters) < 1:
