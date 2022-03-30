@@ -9,14 +9,15 @@ logging.basicConfig(filename='everything.log', level=logging.INFO)
 
 class Bot(commands.Bot):
     def __init__(self):
+        name = os.environ['BOT_NICK']
         super().__init__(
             token=os.environ['TMI_TOKEN'],
             client_id=os.environ['CLIENT_ID'],
-            nick=os.environ['BOT_NICK'],
+            nick=name,
             prefix=os.environ['BOT_PREFIX'],
             initial_channels=[os.environ['CHANNEL']]
         )
-        self.history = [f'mangort: Hi guys, this is {self.nick}.', f'{self.nick}: Hi everyone, how can I help you?']
+        self.history = [f'mangort: Hi guys, this is {name}.', f'{name}: Hi everyone, how can I help you?']
         self.first_message = 'HeyGuys'
         self.active = True
         self.chatters = []
@@ -26,11 +27,10 @@ class Bot(commands.Bot):
         return content[0] in '!/' or content.startswith(chr(1)+'ACTION ')
 
     def add_history(self, content, author):
-        if not self.is_command(content):
-            self.history += [f'{author}: {content}']
+        self.history += [f'{author}: {content}']
 
     def should_free_respond(self, content, author):
-        return self.active and author in self.chatters or self.nick.lower() in content.lower()
+        return self.active and (author in self.chatters or self.nick.lower() in content.lower())
 
     async def event_ready(self):
         'Called once when the bot goes online.'
@@ -45,8 +45,6 @@ class Bot(commands.Bot):
 
         content = ctx.content
         author = ctx.author.name
-    
-        self.add_history(content, author)
 
         if author.lower() == self.nick.lower():
             return
@@ -55,23 +53,36 @@ class Bot(commands.Bot):
             await self.handle_commands(ctx)
             return
 
+        self.add_history(content, author) # Command history is not added
+
         if self.should_free_respond(content, author):
-            response = respond(self.history[1:], author)
-            if response:
-                if author in response.lower():
-                    msg = response
-                else:
-                    msg = f'{response} @{author}'
-                time.sleep(len(response)*0.04)
-                await ctx.channel.send(msg)
+            await self.free_reply(ctx)
+
+    async def free_reply(self, ctx):
+        author = ctx.author.name
+        response = respond(self.history, author)
+        if response:
+            if author in response.lower() or author in self.chatters:
+                msg = response
             else:
-                await ctx.channel.send(':|')
+                msg = f'{response} @{author}'
+            time.sleep(len(response)*0.04)
+            await ctx.channel.send(msg)
+            self.add_history(msg, self.nick)
+        else:
+            await ctx.channel.send(':|')
+
+    @commands.command()
+    async def r(self, ctx):
+        if not self.active:
+            return
+        await self.free_reply(ctx)
 
     @commands.command()
     async def robogort(self, ctx):
         if not self.active:
             return
-        await ctx.send("Hi @{ctx.author.name}! I'm mangort's robot. I'll respond to you when you use my name. I'm trained on the ENTIRE internet so can get pretty offensive. Mangort is working on fixing that but hasn't yet so be warned!. Type !help to see what I can do.")
+        await ctx.send(f"Hi {ctx.author.name}! I'm mangort's robot. I'll respond to you when you use my name or !r. I'm trained on the ENTIRE internet so can get pretty offensive so be warned!. Type !help to see what I can do.")
 
     @commands.command()
     async def help(self, ctx):
@@ -139,6 +150,7 @@ class Bot(commands.Bot):
     async def event_error(self, error, data):
         print("ERRORRRING: Need to learn from this event and act on it")
         print(error)
+        logging.error(error)
 
 if __name__ == "__main__":
     Bot().run()

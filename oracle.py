@@ -85,16 +85,14 @@ def stop_index(text):
     return -1
 
 def extract_response_line(raw_response):
-    line = first_nonblank_line(raw_response)
-    stopped_line = strip_prefixes(line[:stop_index(line)+1]) # Not using this for now
-    return strip_prefixes(line)
+    return first_nonblank_line(raw_response)
     
 def first_nonblank_line(raw_response):
-    lines = map(lambda l: l.strip(), raw_response.split('\n'))
-    return next(filter(lambda l: l, lines), None)
+    lines = map(lambda l: strip_prefixes(l.strip()), raw_response.split('\n'))
+    return next(filter(lambda l: len(l) > 0, lines), None)
 
 def strip_prefixes(line):
-    if line[0] == '/' or line[0] == '!':
+    if line[0] in '/!':
         return line[1:]
     return line
 
@@ -114,8 +112,7 @@ def respond(history, author, attempts=2):
     belief_str = '\n'.join(beliefs)
     truncated_history = '\n'.join(history + [f'robogort:'])[-500:]
     # prompt = "ROBOGORT'S BELIEFS:\n" + belief_str + "\n\nTRUNCATED TRANSCRIPT:\n" + truncated_history
-    prompt = truncated_history # This will probably start with too little info
-    print("PROMPT:\n"+prompt)
+    prompt = truncated_history # TODO: This will probably start with too little info
     attempts_left = attempts
     while attempts_left > 0:
         raw_response = complete(prompt)
