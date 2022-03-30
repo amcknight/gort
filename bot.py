@@ -3,8 +3,8 @@ import openai
 import time
 from twitchio.ext import commands
 from oracle import ask, respond
-
 import logging
+
 logging.basicConfig(filename='everything.log', level=logging.INFO)
 
 class Bot(commands.Bot):
@@ -169,9 +169,9 @@ class Bot(commands.Bot):
         self.history = []
 
     async def event_error(self, error, data):
-        print("ERRORRRING: Need to learn from this event and act on it")
         print(error)
         logging.error(error)
+        await self.connected_channels[0].send(':boom:')
 
 if __name__ == "__main__":
     Bot().run()
