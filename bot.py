@@ -17,7 +17,23 @@ class Bot(commands.Bot):
             prefix=os.environ['BOT_PREFIX'],
             initial_channels=[os.environ['CHANNEL']]
         )
-        self.history = [f'mangort: Hi guys, this is {name}.', f'{name}: Hi everyone, how can I help you?']
+        initial_history = [
+            f'mangort: Hi guys, this is {name}',
+            f'{name}: Hi everyone! HeyGuys'
+            f'mangort: He is a friendly chatbot who answers questions honestly and politely'
+            f'{name}: Think of me as a chatty encyclopedia',
+            f'mangort: Robogort, do you know what kaizo is?',
+            f'{name}: Kaizo is a game style that originally meant "Rebuilt" in Japanese, at least according to smwcentral. Kaizo levels are usually difficult and there are no extra power-ups given.'
+            f'mangort: have a girlfriend, @robogort?',
+            f'{name}: I\'m a 2 foot tall robot. I definitely do NOT have a girlfriend LUL @mangort',
+            f'buttsbot: I have a girlfriend',
+            f'mangort: Yeah right, buttsbot LUL',
+            f'mangort: what do you know about Mario 64 robogort',
+            f'{name}: Not much, mangort, but I do know that it came out on N64 and is probably the most speedran game of all time.',
+            f'mangort: @robogort how are ya today',
+            f'{name}: I\'m fine mangort. My batteries could use recharging though :( How are you?'
+        ]
+        self.history = initial_history
         self.first_message = 'HeyGuys'
         self.active = True
         self.chatters = []
@@ -66,7 +82,7 @@ class Bot(commands.Bot):
                 msg = response
             else:
                 msg = f'{response} @{author}'
-            time.sleep(len(response)*0.04)
+            time.sleep(len(response)*0.01)
             await ctx.channel.send(msg)
             self.add_history(msg, self.nick)
         else:
