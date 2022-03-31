@@ -168,7 +168,7 @@ class Bot(commands.Bot):
         await ctx.channel.send('peepoTrip I\'m reborn!')
         self.history = []
 
-    async def event_error(self, error, data):
+    async def event_error(self, error):
         print(error)
         logging.error(error)
         await self.connected_channels[0].send(':boom:')
