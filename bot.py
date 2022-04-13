@@ -4,6 +4,7 @@ import logging
 import openai
 from random import choice, randrange
 from twitchio.ext import commands
+from twitchio.channel import Channel
 from oracle import ask, respond, complete_haiku, complete_best3
 from text import initial_history
 
@@ -87,7 +88,7 @@ class Bot(commands.Bot):
         if (words[0] == 'mangor7Ban'):
             banned = " ".join(words[1:]).strip()
             if len(banned) == 0:
-                pass
+                await ctx.channel.send(f'/me {ctx.author.name} banned themselves LUL')
             else:
                 await ctx.channel.send(f'/me {banned} has been banned for {self.random_time()}')
 
@@ -103,6 +104,16 @@ class Bot(commands.Bot):
     async def event_join(self, channel, user):
         if channel.name == 'mangort':
             pass # A user joined
+
+    # TODO: This is just a test to see what happens when I'm raided  etc
+    async def event_raw_usernotice(self, channel: Channel, tags: dict):
+        try:
+            logging.info("RAW USER NOTICE:::::")
+            logging.info(tags)
+            logging.info("::::: RAW USER NOTICE")
+        except:
+            pass
+        return await super().event_raw_usernotice(channel, tags)
 
     @commands.command()
     async def r(self, ctx):
@@ -183,6 +194,9 @@ class Bot(commands.Bot):
             return
 
         topic = ' '.join(ctx.args).strip()
+        if not topic:
+            await ctx.send(f"Give me a topic to work with")
+            return
 
         h = complete_haiku(topic)
         lines = h.split('\n')
