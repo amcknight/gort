@@ -5,6 +5,7 @@ import openai
 from random import choice, randrange
 from twitchio.ext import commands
 from oracle import ask, respond, complete_haiku, complete_best3
+from text import initial_history
 
 logging.basicConfig(filename='everything.log', level=logging.INFO)
 
@@ -14,29 +15,13 @@ class Bot(commands.Bot):
         self.active = True
         self.chatters = []
         
-        botName = os.environ['BOT_NICK']
-        initial_history = [
-            f'mangort: Hi guys, this is {botName}',
-            f'{botName}: Hi everyone! HeyGuys'
-            f'mangort: He is a friendly chatbot who answers questions honestly and politely'
-            f'{botName}: Think of me as a chatty encyclopedia',
-            f'mangort: Robogort, do you know what kaizo is?',
-            f'{botName}: Kaizo is a game style that originally meant "Rebuilt" in Japanese, at least according to smwcentral. Kaizo levels are usually difficult and there are no extra power-ups given.'
-            f'mangort: have a girlfriend, @robogort?',
-            f'{botName}: I\'m a 2 foot tall robot. I definitely do NOT have a girlfriend LUL @mangort',
-            f'buttsbot: I have a girlfriend',
-            f'mangort: Yeah right, buttsbot LUL',
-            f'mangort: what do you know about Mario 64 robogort',
-            f'{botName}: Not much, mangort, but I do know that it came out on N64 and is probably the most speedran game of all time.',
-            f'mangort: @robogort how are ya today',
-            f'{botName}: I\'m fine mangort. My batteries could use recharging though :( How are you?'
-        ]
-        self.history = initial_history
+        name = os.environ['BOT_NICK']
+        self.history = initial_history(name).split('\n')
         
         super().__init__(
             token=os.environ['TMI_TOKEN'],
             client_id=os.environ['CLIENT_ID'],
-            nick=botName,
+            nick=name,
             prefix=os.environ['BOT_PREFIX'],
             initial_channels=[os.environ['CHANNEL']]
         )
@@ -199,7 +184,7 @@ class Bot(commands.Bot):
 
         topic = ' '.join(ctx.args).strip()
 
-        h = complete_haiku(topic).strip()
+        h = complete_haiku(topic)
         lines = h.split('\n')
 
         await ctx.send(f"pepegeHmm ~ {topic} ~")

@@ -1,5 +1,7 @@
 import openai
 
+from text import best3, haiku
+
 respond_preamble = 'This is an ongoing intelligent and fun conversation happening on a twitch stream chat. This is the transcript:'
 
 preamble = 'My name is \'robogort\' and I am an honest and highly intelligent Super Mario World Romhack question answering bot. I will answer questions as truthfully as possible in a single sentence. If you ask me a question I am unsure about, is nonsense, or has no clear answer, I will respond with "PASS".'
@@ -132,63 +134,8 @@ def complete(prompt, stops = None):
     return text
 
 def complete_haiku(topic):
-    prompt = f'{haiku_prompt}\n{topic.strip()}\nHAIKU:'
-    return complete(prompt, stops = ["TOPIC"])
+    return complete(haiku(topic.strip()), stops = ["TOPIC"]).strip()
 
 def complete_best3(topic):
-    prompt = f"""
-List the 3 best ice cream:
-1. Double chocolate
-2. Raspberry Rainbow ice cream
-3. Magical Hyper-enhanced Vanilla
+    return complete(best3(topic.strip()), stops = ['4.']).strip()
 
-List the best 3 {topic}:
-1."""
-    return complete(prompt, stops = ['4.']).strip()
-
-haiku_prompt = f"""
-Below is a list of creative and properly formed haikus in the 5 by 7 by 5 format.
-
-TOPIC:
-Ponds
-HAIKU:
-An old silent pond
-A frog jumps into the pond—
-Splash! Silence again.
-
-TOPIC:
-Relaxing
-HAIKU:
-Picking up pebbles
-Or seashells strewn on soft sand
-Pure relaxation.
-
-TOPIC:
-Dreams
-HAIKU:
-A plane flies over,
-you dream of being on it.
-Ideas flourish.
-
-TOPIC:
-Babies
-HAIKU:
-You're so cute, but why
-Should I write a haiku for you?
-You can't even read.
-
-TOPIC:
-Stinky Cheese
-HAIKU:
-I love you so much,
-But your love of cheese is wrong.
-The smell makes me gag.
-
-TOPIC:
-kaizo
-HAIKU:
-This game is too hard
-I can't pass the first level
-Someone help me please
-
-TOPIC:"""
