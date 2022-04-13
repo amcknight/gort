@@ -2,41 +2,43 @@ import os
 import openai
 import time
 from twitchio.ext import commands
-from oracle import ask, respond
+from oracle import ask, respond, complete_haiku, complete_best3
 import logging
 
 logging.basicConfig(filename='everything.log', level=logging.INFO)
 
 class Bot(commands.Bot):
     def __init__(self):
-        name = os.environ['BOT_NICK']
-        super().__init__(
-            token=os.environ['TMI_TOKEN'],
-            client_id=os.environ['CLIENT_ID'],
-            nick=name,
-            prefix=os.environ['BOT_PREFIX'],
-            initial_channels=[os.environ['CHANNEL']]
-        )
-        initial_history = [
-            f'mangort: Hi guys, this is {name}',
-            f'{name}: Hi everyone! HeyGuys'
-            f'mangort: He is a friendly chatbot who answers questions honestly and politely'
-            f'{name}: Think of me as a chatty encyclopedia',
-            f'mangort: Robogort, do you know what kaizo is?',
-            f'{name}: Kaizo is a game style that originally meant "Rebuilt" in Japanese, at least according to smwcentral. Kaizo levels are usually difficult and there are no extra power-ups given.'
-            f'mangort: have a girlfriend, @robogort?',
-            f'{name}: I\'m a 2 foot tall robot. I definitely do NOT have a girlfriend LUL @mangort',
-            f'buttsbot: I have a girlfriend',
-            f'mangort: Yeah right, buttsbot LUL',
-            f'mangort: what do you know about Mario 64 robogort',
-            f'{name}: Not much, mangort, but I do know that it came out on N64 and is probably the most speedran game of all time.',
-            f'mangort: @robogort how are ya today',
-            f'{name}: I\'m fine mangort. My batteries could use recharging though :( How are you?'
-        ]
-        self.history = initial_history
         self.first_message = 'HeyGuys'
         self.active = True
         self.chatters = []
+        
+        botName = os.environ['BOT_NICK']
+        initial_history = [
+            f'mangort: Hi guys, this is {botName}',
+            f'{botName}: Hi everyone! HeyGuys'
+            f'mangort: He is a friendly chatbot who answers questions honestly and politely'
+            f'{botName}: Think of me as a chatty encyclopedia',
+            f'mangort: Robogort, do you know what kaizo is?',
+            f'{botName}: Kaizo is a game style that originally meant "Rebuilt" in Japanese, at least according to smwcentral. Kaizo levels are usually difficult and there are no extra power-ups given.'
+            f'mangort: have a girlfriend, @robogort?',
+            f'{botName}: I\'m a 2 foot tall robot. I definitely do NOT have a girlfriend LUL @mangort',
+            f'buttsbot: I have a girlfriend',
+            f'mangort: Yeah right, buttsbot LUL',
+            f'mangort: what do you know about Mario 64 robogort',
+            f'{botName}: Not much, mangort, but I do know that it came out on N64 and is probably the most speedran game of all time.',
+            f'mangort: @robogort how are ya today',
+            f'{botName}: I\'m fine mangort. My batteries could use recharging though :( How are you?'
+        ]
+        self.history = initial_history
+        
+        super().__init__(
+            token=os.environ['TMI_TOKEN'],
+            client_id=os.environ['CLIENT_ID'],
+            nick=botName,
+            prefix=os.environ['BOT_PREFIX'],
+            initial_channels=[os.environ['CHANNEL']]
+        )
 
     def is_command(self, content):
         # chr(1) is a Start of Header character that shows up invisibly in /me ACTIONs
@@ -59,12 +61,13 @@ class Bot(commands.Bot):
     async def event_message(self, ctx):
         'Runs every time a message is sent in chat.'
 
-        content = ctx.content
+        if not ctx.author:
+            return # No author. Maybe because from first_message?
         author = ctx.author.name
-
         if author.lower() == self.nick.lower():
             return
 
+        content = ctx.content
         if self.is_command(content):
             await self.handle_commands(ctx)
             return
@@ -76,7 +79,7 @@ class Bot(commands.Bot):
 
     async def free_reply(self, ctx):
         author = ctx.author.name
-        response = respond(self.history, author)
+        response = respond(self.history, self.nick)
         if response:
             if author in response.lower() or author in self.chatters:
                 msg = response
@@ -90,8 +93,7 @@ class Bot(commands.Bot):
 
     async def event_join(self, channel, user):
         if channel.name == 'mangort':
-            if user.name.startswith('manofsteel'):
-                await channel.send(f'/ban {user.name} auto-ban due to thousands of previous micro-harassments')
+            pass # A user joined
 
     @commands.command()
     async def r(self, ctx):
@@ -152,13 +154,56 @@ class Bot(commands.Bot):
         else:
             await ctx.send(f"You're not even near me, {author}. Don't worry, we're not chatting! LUL")
 
-    async def chatting(self, ctx):
-        if len(self.chatters) < 1:
-            await ctx.send(f"/me isn't chatting")
-        elif len(self.chatters) == 1:
-            await ctx.send(f"/me is chatting with {self.chatters[0]}")
+    @commands.command()
+    async def asme(self, ctx):
+        if not self.active:
+            return
+
+        author = ctx.author.name
+        response = respond(self.history, author)
+        if response:
+            msg = f'{author}: {response}'
+            time.sleep(len(response)*0.01)
+            await ctx.channel.send(msg)
         else:
-            await ctx.send(f"/me is chatting with {', '.join(self.chatters[:-1])}, and {self.chatters[-1]}")
+            await ctx.channel.send(':|')
+
+    @commands.command()
+    async def haiku(self, ctx, *args):
+        if not self.active:
+            return
+
+        topic = ' '.join(ctx.args).strip()
+
+        h = complete_haiku(topic).strip()
+        lines = h.split('\n')
+
+        await ctx.send(f"pepegeHmm ~ {topic} ~")
+        time.sleep(1)
+        for line in lines:
+            time.sleep(0.5)
+            await ctx.send(f"/me {line.strip()}")
+
+    @commands.command()
+    async def best(self, ctx, *args):
+        if not self.active:
+            return
+
+        topic = ' '.join(ctx.args).strip()
+
+        response = complete_best3(topic)
+        lines = response.split('\n')
+
+        if len(lines) < 3:
+            await ctx.send(':|')
+        else:
+            lines[0] = f'1. {lines[0].strip()}'
+            time.sleep(0.5)
+            await ctx.send(lines[0].strip())
+            time.sleep(0.3)
+            await ctx.send(lines[1].strip())
+            time.sleep(0.3)
+            await ctx.send(lines[2].strip())
 
     @commands.command()
     async def reset(self, ctx):
@@ -168,10 +213,21 @@ class Bot(commands.Bot):
         await ctx.channel.send('peepoTrip I\'m reborn!')
         self.history = []
 
+    @commands.command()
+    async def chatting(self, ctx):
+        if len(self.chatters) < 1:
+            await ctx.send(f"/me isn't chatting")
+        elif len(self.chatters) == 1:
+            await ctx.send(f"/me is chatting with {self.chatters[0]}")
+        elif len(self.chatters) == 2:
+            await ctx.send(f"/me is chatting with {self.chatters[0]} and {self.chatters[1]}")
+        else:
+            await ctx.send(f"/me is chatting with {', '.join(self.chatters[:-1])}, and {self.chatters[-1]}")
+
     async def event_error(self, error):
         print(error)
         logging.error(error)
-        await self.connected_channels[0].send(':boom:')
+        await self.connected_channels[0].send("/me :boom: PepeHands there are bugs in my brain, mangort")
 
 if __name__ == "__main__":
     Bot().run()

@@ -108,11 +108,8 @@ def ask(question):
     
     return answer
 
-def respond(history, author, attempts=2):
-    belief_str = '\n'.join(beliefs)
-    truncated_history = '\n'.join(history + [f'robogort:'])[-500:]
-    # prompt = "ROBOGORT'S BELIEFS:\n" + belief_str + "\n\nTRUNCATED TRANSCRIPT:\n" + truncated_history
-    prompt = truncated_history # TODO: This will probably start with too little info
+def respond(history, speaker, attempts=2):
+    prompt = '\n'.join(history + [f'{speaker}:'])[-500:]
     attempts_left = attempts
     while attempts_left > 0:
         raw_response = complete(prompt)
@@ -122,9 +119,76 @@ def respond(history, author, attempts=2):
         attempts_left -= 1
     return
 
-def complete(prompt):
+def complete(prompt, stops = None):
     # The main prompt completer
     global max_tokens
-    response = openai.Completion.create(engine="curie", prompt=prompt, max_tokens=max_tokens)
+    response = openai.Completion.create(
+        engine="curie",
+        prompt=prompt,
+        max_tokens=max_tokens,
+        stop=stops
+    )
     text = response.choices[0].text
     return text
+
+def complete_haiku(topic):
+    prompt = f'{haiku_prompt}\n{topic.strip()}\nHAIKU:'
+    return complete(prompt, stops = ["TOPIC"])
+
+def complete_best3(topic):
+    prompt = f"""
+List the 3 best ice cream:
+1. Double chocolate
+2. Raspberry Rainbow ice cream
+3. Magical Hyper-enhanced Vanilla
+
+List the best 3 {topic}:
+1."""
+    return complete(prompt, stops = ['4.']).strip()
+
+haiku_prompt = f"""
+Below is a list of creative and properly formed haikus in the 5 by 7 by 5 format.
+
+TOPIC:
+Ponds
+HAIKU:
+An old silent pond
+A frog jumps into the pond—
+Splash! Silence again.
+
+TOPIC:
+Relaxing
+HAIKU:
+Picking up pebbles
+Or seashells strewn on soft sand
+Pure relaxation.
+
+TOPIC:
+Dreams
+HAIKU:
+A plane flies over,
+you dream of being on it.
+Ideas flourish.
+
+TOPIC:
+Babies
+HAIKU:
+You're so cute, but why
+Should I write a haiku for you?
+You can't even read.
+
+TOPIC:
+Stinky Cheese
+HAIKU:
+I love you so much,
+But your love of cheese is wrong.
+The smell makes me gag.
+
+TOPIC:
+kaizo
+HAIKU:
+This game is too hard
+I can't pass the first level
+Someone help me please
+
+TOPIC:"""
