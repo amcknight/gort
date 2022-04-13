@@ -1,9 +1,10 @@
 import os
-import openai
 import time
+import logging
+import openai
+from random import choice, randrange
 from twitchio.ext import commands
 from oracle import ask, respond, complete_haiku, complete_best3
-import logging
 
 logging.basicConfig(filename='everything.log', level=logging.INFO)
 
@@ -44,6 +45,9 @@ class Bot(commands.Bot):
         # chr(1) is a Start of Header character that shows up invisibly in /me ACTIONs
         return content[0] in '!/' or content.startswith(chr(1)+'ACTION ')
 
+    def is_emote_command(self, content):
+        return content.startswith('mangor7Ban')
+
     def add_history(self, content, author):
         self.history += [f'{author}: {content}']
 
@@ -72,9 +76,11 @@ class Bot(commands.Bot):
             await self.handle_commands(ctx)
             return
 
-        self.add_history(content, author) # Command history is not added
+        self.add_history(content, author)
 
-        if self.should_free_respond(content, author):
+        if self.is_emote_command(content):
+            await self.handle_emote_command(ctx)
+        elif self.should_free_respond(content, author):
             await self.free_reply(ctx)
 
     async def free_reply(self, ctx):
@@ -90,6 +96,24 @@ class Bot(commands.Bot):
             self.add_history(msg, self.nick)
         else:
             await ctx.channel.send(':|')
+
+    async def handle_emote_command(self, ctx):
+        words = ctx.content.split(' ')
+        if (words[0] == 'mangor7Ban'):
+            banned = " ".join(words[1:]).strip()
+            if len(banned) == 0:
+                pass
+            else:
+                await ctx.channel.send(f'/me {banned} has been banned for {self.random_time()}')
+
+    def random_time(self):
+        units = ['frame', 'mushroom second', 'second', 'minute', 'hour', 'day', 'week', 'month', 'year', 'decade', 'eon']
+        unit = choice(units)
+        num = randrange(100)
+        if num == 1:
+            return f'{num} {unit}'
+        else:
+            return f'{num} {unit}s'
 
     async def event_join(self, channel, user):
         if channel.name == 'mangort':
