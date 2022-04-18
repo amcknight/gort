@@ -107,6 +107,11 @@ class Bot(commands.Bot):
 
     # TODO: This is just a test to see what happens when I'm raided  etc
     async def event_raw_usernotice(self, channel: Channel, tags: dict):
+        if tags['msg-id'] == 'raid':
+            await channel.send(f'!so {tags["display-name"]}')
+        elif tags['msg-id'] in ['sub', 'subgift', 'submysterygift']:
+            pass # Need to collect groups of gifts into a single message if using this
+        
         try:
             logging.info("RAW USER NOTICE:::::")
             logging.info(tags)
