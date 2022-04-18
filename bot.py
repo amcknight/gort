@@ -12,7 +12,7 @@ logging.basicConfig(filename='everything.log', level=logging.INFO)
 
 class Bot(commands.Bot):
     def __init__(self):
-        self.version = '0.1.0'
+        self.v = '0.1.0'
         self.first_message = 'HeyGuys'
         self.active = True
         self.chatters = []
@@ -123,7 +123,7 @@ class Bot(commands.Bot):
 
     @commands.command()
     async def version(self, ctx):
-        await ctx.send(f'peepoHmm v{self.version}')
+        await ctx.send(f'peepoHmm v{self.v}')
 
     @commands.command()
     async def r(self, ctx):
