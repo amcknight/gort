@@ -12,6 +12,7 @@ logging.basicConfig(filename='everything.log', level=logging.INFO)
 
 class Bot(commands.Bot):
     def __init__(self):
+        self.version = '0.1.0'
         self.first_message = 'HeyGuys'
         self.active = True
         self.chatters = []
@@ -78,19 +79,19 @@ class Bot(commands.Bot):
             else:
                 msg = f'{response} @{author}'
             time.sleep(len(response)*0.01)
-            await ctx.channel.send(msg)
+            await ctx.send(msg)
             self.add_history(msg, self.nick)
         else:
-            await ctx.channel.send(':|')
+            await ctx.send(':|')
 
     async def handle_emote_command(self, ctx):
         words = ctx.content.split(' ')
         if (words[0] == 'mangor7Ban'):
             banned = " ".join(words[1:]).strip()
             if len(banned) == 0:
-                await ctx.channel.send(f'/me {ctx.author.name} banned themselves LUL')
+                await ctx.send(f'/me {ctx.author.name} banned themselves LUL')
             else:
-                await ctx.channel.send(f'/me {banned} has been banned for {self.random_time()}')
+                await ctx.send(f'/me {banned} has been banned for {self.random_time()}')
 
     def random_time(self):
         units = ['frame', 'mushroom second', 'second', 'minute', 'hour', 'day', 'week', 'month', 'year', 'decade', 'eon']
@@ -111,7 +112,7 @@ class Bot(commands.Bot):
             await channel.send(f'!so {tags["display-name"]}')
         elif tags['msg-id'] in ['sub', 'subgift', 'submysterygift']:
             pass # Need to collect groups of gifts into a single message if using this
-        
+
         try:
             logging.info("RAW USER NOTICE:::::")
             logging.info(tags)
@@ -119,6 +120,10 @@ class Bot(commands.Bot):
         except:
             pass
         return await super().event_raw_usernotice(channel, tags)
+
+    @commands.command()
+    async def version(self, ctx):
+        await ctx.send(f'peepoHmm {self.version}')
 
     @commands.command()
     async def r(self, ctx):
@@ -189,9 +194,9 @@ class Bot(commands.Bot):
         if response:
             msg = f'{author}: {response}'
             time.sleep(len(response)*0.01)
-            await ctx.channel.send(msg)
+            await ctx.send(msg)
         else:
-            await ctx.channel.send(':|')
+            await ctx.send(':|')
 
     @commands.command()
     async def haiku(self, ctx, *args):
@@ -238,7 +243,7 @@ class Bot(commands.Bot):
         print("RESET")
         if not self.active:
             return
-        await ctx.channel.send('peepoTrip I\'m reborn!')
+        await ctx.send('peepoTrip I\'m reborn!')
         self.history = []
 
     @commands.command()
