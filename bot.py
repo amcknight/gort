@@ -106,24 +106,24 @@ class Bot(commands.Bot):
         if channel.name == 'mangort':
             pass # A user joined
 
-    # TODO: This is just a test to see what happens when I'm raided  etc
     async def event_raw_usernotice(self, channel: Channel, tags: dict):
         if tags['msg-id'] == 'raid':
             await channel.send(f'!so {tags["display-name"]}')
         elif tags['msg-id'] in ['sub', 'subgift', 'submysterygift']:
-            pass # Need to collect groups of gifts into a single message if using this
-
-        try:
-            logging.info("RAW USER NOTICE:::::")
+            logging.info("SUB:::")
             logging.info(tags)
-            logging.info("::::: RAW USER NOTICE")
-        except:
-            pass
+            pass # Need to collect groups of gifts into a single message if using this
+        elif tags['msg-id'] == 'host':
+            logging.info("HOST:::")
+            logging.info(tags)
+        else:
+            logging.info("RAW USER NOTICE:::")
+            logging.info(tags)
         return await super().event_raw_usernotice(channel, tags)
 
     @commands.command()
     async def version(self, ctx):
-        await ctx.send(f'peepoHmm {self.version}')
+        await ctx.send(f'peepoHmm v{self.version}')
 
     @commands.command()
     async def r(self, ctx):
