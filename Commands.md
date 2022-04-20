@@ -1,7 +1,5 @@
 ## Commands
 
-### Commands without parameters
-
 `!asme` If you don't know what to say, get robogort to respond with what it thinks you would say
 
 `!chat` / `!unchat` Causes robogort to always respond to you
@@ -10,7 +8,7 @@
 
 `!reset` Wipes his short-term memory. As if he just re-entered chat
 
-### Commands with free-form parameters
+---
 
 `!r *` Robogort will interpret this as a message for him to respond to
 
@@ -18,7 +16,7 @@
 
 `!best *` Will list the top 3 of the thing you give it
 
-### Boring Commands without parameters
+---
 
 `!version` Shows the version
 
