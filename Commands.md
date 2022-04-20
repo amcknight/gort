@@ -16,6 +16,8 @@
 
 `!best *` Will list the top 3 of the thing you give it
 
+`mangor7Ban *` Will ban the named person (or thing)
+
 ---
 
 `!version` Shows the version
