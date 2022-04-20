@@ -1,9 +1,7 @@
 Subject to drastic changes
 
 ### Version 0.2
-- Shouts people out after they raid or host
 - A commands page explaining all commands
-- Create an "add command" command
 - Create a question answering command
 
 ### Version 1.0
