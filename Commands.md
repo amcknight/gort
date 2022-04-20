@@ -1,3 +1,10 @@
+Robogort will freely respond if you:
+1) Use his name
+2) Prefix your message with `!r`
+3) Are chatting with him. (See `!chat` below)
+
+He can be arbitrarily offensive, so just be warned that he's a bot trained on the depths of the internet.
+
 ## Commands
 
 `!asme` If you don't know what to say, get robogort to respond with what it thinks you would say
