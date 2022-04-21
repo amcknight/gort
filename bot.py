@@ -12,7 +12,7 @@ logging.basicConfig(filename='everything.log', level=logging.INFO)
 
 class Bot(commands.Bot):
     def __init__(self):
-        self.v = '0.1.1'
+        self.v = '0.1.02'
         self.first_message = 'HeyGuys'
         self.active = True
         self.chatters = []
@@ -49,29 +49,30 @@ class Bot(commands.Bot):
     async def event_raw_data(self, data):
         logging.info(data)
 
-    async def event_message(self, ctx):
+    async def event_message(self, msg):
         'Runs every time a message is sent in chat.'
 
-        if not ctx.author:
+        if not msg.author:
             return # No author. Maybe because from first_message?
-        author = ctx.author.name
+
+        channel = msg.channel
+        content = msg.content
+        author = msg.author.name
         if author.lower() == self.nick.lower():
             return
 
-        content = ctx.content
         if self.is_command(content):
-            await self.handle_commands(ctx)
+            await self.handle_commands(msg)
             return
 
         self.add_history(content, author)
 
         if self.is_emote_command(content):
-            await self.handle_emote_command(ctx)
+            await self.handle_emote_command(channel, content, author)
         elif self.should_free_respond(content, author):
-            await self.free_reply(ctx)
+            await self.free_reply(channel, author)
 
-    async def free_reply(self, ctx):
-        author = ctx.author.name
+    async def free_reply(self, channel, author):
         response = respond(self.history, self.nick)
         if response:
             if author in response.lower() or author in self.chatters:
@@ -79,19 +80,19 @@ class Bot(commands.Bot):
             else:
                 msg = f'{response} @{author}'
             time.sleep(len(response)*0.01)
-            await ctx.send(msg)
+            await channel.send(msg)
             self.add_history(msg, self.nick)
         else:
-            await ctx.send(':|')
+            await channel.send(':|')
 
-    async def handle_emote_command(self, ctx):
-        words = ctx.content.split(' ')
+    async def handle_emote_command(self, channel, content, author):
+        words = content.split(' ')
         if (words[0] == 'mangor7Ban'):
             banned = " ".join(words[1:]).strip()
             if len(banned) == 0:
-                await ctx.send(f'/me {ctx.author.name} banned themselves LUL')
+                await channel.send(f'/me {author} banned themselves LUL')
             else:
-                await ctx.send(f'/me {banned} has been banned for {self.random_time()}')
+                await channel.send(f'/me {banned} has been banned for {self.random_time()}')
 
     def random_time(self):
         units = ['frame', 'mushroom second', 'second', 'minute', 'hour', 'day', 'week', 'month', 'year', 'decade', 'eon']
@@ -129,7 +130,7 @@ class Bot(commands.Bot):
     async def r(self, ctx):
         if not self.active:
             return
-        await self.free_reply(ctx)
+        await self.free_reply(ctx.channel, ctx.author.name)
 
     @commands.command()
     async def robogort(self, ctx):
@@ -139,7 +140,7 @@ class Bot(commands.Bot):
 
     @commands.command()
     async def help(self, ctx):
-        await ctx.send("Commands: !leave -> I'll leave the room, !enter -> I'll enter the room, !chat -> I'll respond to everything you say without you calling my name, !unchat -> I'll only respond to you when you use my name, !reset I'll wipe my short term memory")
+        await ctx.send("Robogort commands: https://github.com/amcknight/gortbot/blob/main/Commands.md")
 
     @commands.command()
     async def enter(self, ctx):
