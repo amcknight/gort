@@ -7,7 +7,7 @@ He can be arbitrarily offensive, so just be warned that he's a bot trained on th
 
 ## Commands
 
-`!asme` If you don't know what to say, get robogort to respond with what it thinks you would say
+`!asme` If you don't know what to say, get robogort to respond with what he thinks you would say
 
 `!chat` / `!unchat` Causes robogort to always respond to you
 
@@ -28,8 +28,6 @@ He can be arbitrarily offensive, so just be warned that he's a bot trained on th
 ---
 
 `!version` Shows the version
-
-`!robogort` Tells you what robogort is
 
 `!help` Sends you to this page
 

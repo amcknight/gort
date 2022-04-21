@@ -133,12 +133,6 @@ class Bot(commands.Bot):
         await self.free_reply(ctx.channel, ctx.author.name)
 
     @commands.command()
-    async def robogort(self, ctx):
-        if not self.active:
-            return
-        await ctx.send(f"Hi {ctx.author.name}! I'm mangort's robot. I'll respond to you when you use my name or !r. I'm trained on the ENTIRE internet so can get pretty offensive so be warned!. Type !help to see what I can do.")
-
-    @commands.command()
     async def help(self, ctx):
         await ctx.send("Robogort commands: https://github.com/amcknight/gortbot/blob/main/Commands.md")
 
