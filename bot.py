@@ -12,7 +12,7 @@ logging.basicConfig(filename='everything.log', level=logging.INFO)
 
 class Bot(commands.Bot):
     def __init__(self):
-        self.v = '0.1.05'
+        self.v = '0.1.06'
         self.first_message = 'HeyGuys'
         self.active = True
         self.chatters = []
@@ -134,7 +134,7 @@ class Bot(commands.Bot):
 
     @commands.command()
     async def help(self, ctx):
-        await ctx.send("Robogort commands: https://github.com/amcknight/gortbot/blob/main/Commands.md")
+        await ctx.send("Robogort commands: https://github.com/amcknight/gort/blob/main/Commands.md")
 
     @commands.command()
     async def enter(self, ctx):

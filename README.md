@@ -44,7 +44,7 @@ pipenv install
 
 ### Set environment variables
 
-Set these environment variables. I recommend just creating a file called `.env` and putting it in the `gortbot` folder with these filled in.
+Set these environment variables. I recommend just creating a file called `.env` and putting it in the `gort` folder with these filled in.
 
 ```env
 TMI_TOKEN=<TMI TOKEN>
