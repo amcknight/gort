@@ -43,21 +43,32 @@ pip3 install pipenv
 pipenv install
 ```
 
+### Set environment variables
+
+Set these environment variables. I recommend just creating a file called `.env` and putting it in the `gortbot` folder with these filled in.
+
+```env
+TMI_TOKEN=<TMI TOKEN>
+CLIENT_ID=<CLIENT ID>
+BOT_NICK=<BOT NAME>
+CHANNEL=<TWITCH CHANNEL NAME>
+OPENAI_API_KEY=<OPENAI API KEY>
+```
+
 ## Running Gort
 
 ### Manually
 
-Simple go into the `gort` directory and run `pipenv run bot`
+Simply go into the `gort` directory and run `pipenv run bot`
 
-### A durable service that will auto-upgrade
+### As an auto-upgradable service
 
 In the `gort` directory:
 
 ```bash
-chmod +x launch.sh 
 sudo cp gort.service /etc/systemd/system/
-systemctl start gort
-systemctl enable gort
+sudo systemctl start gort
+sudo systemctl enable gort
 ```
 
-To upgrade, restart the service and it will git pull before running.
+To upgrade, restart the service or server and it will `git pull` before running `pipenv run bot`.

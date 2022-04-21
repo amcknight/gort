@@ -12,7 +12,7 @@ logging.basicConfig(filename='everything.log', level=logging.INFO)
 
 class Bot(commands.Bot):
     def __init__(self):
-        self.v = '0.1.03'
+        self.v = '0.1.04'
         self.first_message = 'HeyGuys'
         self.active = True
         self.chatters = []
@@ -24,7 +24,7 @@ class Bot(commands.Bot):
             token=os.environ['TMI_TOKEN'],
             client_id=os.environ['CLIENT_ID'],
             nick=name,
-            prefix=os.environ['BOT_PREFIX'],
+            prefix='!',
             initial_channels=[os.environ['CHANNEL']]
         )
 
