@@ -1,7 +1,6 @@
 Subject to drastic changes
 
 ### Version 0.2
-- A commands page explaining all commands
 - Create a question answering command
 
 ### Version 1.0
