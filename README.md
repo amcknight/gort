@@ -66,8 +66,8 @@ In the `gort` directory:
 
 ```bash
 sudo cp gort.service /etc/systemd/system/
-sudo systemctl start gort
 sudo systemctl enable gort
+sudo systemctl start gort
 ```
 
 To upgrade, restart the service or server and it will `git pull` before running `pipenv run bot`.
