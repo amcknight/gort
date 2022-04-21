@@ -13,7 +13,6 @@ You need Python3.10, pipenv, and git. Detailed instructions below are for EC2.
  Python installation instructions below are taken from [here](https://www.gcptutorials.com/post/python-3.10-installation-on-amazon-linux-2)
 
 ```bash
-cd ~
 sudo yum -y groupinstall "Development Tools"
 sudo yum -y install gcc devel libffi-devel openssl11 openssl11-devel
 wget https://www.python.org/ftp/python/3.10.4/Python-3.10.4.tgz
