@@ -103,10 +103,6 @@ class Bot(commands.Bot):
         else:
             return f'{num} {unit}s'
 
-    async def event_join(self, channel, user):
-        if channel.name == 'mangort':
-            pass # A user joined
-
     async def event_raw_usernotice(self, channel: Channel, tags: dict):
         if tags['msg-id'] == 'raid':
             await channel.send(f'!so {tags["display-name"]}')
@@ -128,8 +124,7 @@ class Bot(commands.Bot):
 
     @commands.command()
     async def r(self, ctx):
-        if not self.active:
-            return
+        if not self.active: return
         await self.free_reply(ctx.channel, ctx.author.name)
 
     @commands.command()
@@ -146,20 +141,15 @@ class Bot(commands.Bot):
 
     @commands.command()
     async def leave(self, ctx):
-        if not self.active:
-            await ctx.send(f"/me isn't here, {ctx.author.name}")
-        else:
-            await ctx.send(f'/me I\'m out. peepoLeave')
-            self.chatters = []
+        if not self.active: return
+        await ctx.send(f'/me I\'m out. peepoLeave')
+        self.chatters = []
         self.active = False
 
     @commands.command()
     async def chat(self, ctx):
+        if not self.active: return
         author = ctx.author.name
-        if not self.active:
-            await ctx.send(f"/me isn't here, {author}")
-            return
-
         if author in self.chatters:
             await ctx.send(f"You've already approached me, {author}. Back up a bit! LUL")
         else:
@@ -168,11 +158,8 @@ class Bot(commands.Bot):
 
     @commands.command()
     async def unchat(self, ctx):
+        if not self.active: return
         author = ctx.author.name
-        if not self.active:
-            await ctx.send(f"/me isn't here, {author}")
-            return
-
         if author in self.chatters:
             self.chatters.remove(author)
             await ctx.send(f"/me and {author} disbanded")
@@ -181,9 +168,7 @@ class Bot(commands.Bot):
 
     @commands.command()
     async def asme(self, ctx):
-        if not self.active:
-            return
-
+        if not self.active: return
         author = ctx.author.name
         response = respond(self.history, author)
         if response:
@@ -195,9 +180,7 @@ class Bot(commands.Bot):
 
     @commands.command()
     async def haiku(self, ctx, *args):
-        if not self.active:
-            return
-
+        if not self.active: return
         topic = ' '.join(ctx.args).strip()
         if not topic:
             await ctx.send(f"Give me a topic to work with")
@@ -214,14 +197,10 @@ class Bot(commands.Bot):
 
     @commands.command()
     async def best(self, ctx, *args):
-        if not self.active:
-            return
-
+        if not self.active: return
         topic = ' '.join(ctx.args).strip()
-
         response = complete_best3(topic)
         lines = response.split('\n')
-
         if len(lines) < 3:
             await ctx.send(':|')
         else:
@@ -235,14 +214,13 @@ class Bot(commands.Bot):
 
     @commands.command()
     async def reset(self, ctx):
-        print("RESET")
-        if not self.active:
-            return
+        if not self.active: return
         await ctx.send('peepoTrip I\'m reborn!')
         self.history = []
 
     @commands.command()
     async def chatting(self, ctx):
+        if not self.active: return
         if len(self.chatters) < 1:
             await ctx.send(f"/me isn't chatting")
         elif len(self.chatters) == 1:
