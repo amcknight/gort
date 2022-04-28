@@ -1,7 +1,7 @@
 Subject to drastic changes
 
 ### Version 0.2
-- Give !best command some chat context
+- Give !best and !haiku commands some chat context
 - Create a question answering command
 
 ### Version 1.0
