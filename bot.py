@@ -1,14 +1,14 @@
 import os
 import time
 import logging
-import openai
 from random import choice, randrange
 from twitchio.ext import commands
 from twitchio.channel import Channel
-from oracle import ask, respond, complete_haiku, complete_best3
+import oracle
 from text import initial_history
 
 logging.basicConfig(filename='everything.log', level=logging.INFO)
+
 
 class Bot(commands.Bot):
     def __init__(self):
@@ -16,7 +16,8 @@ class Bot(commands.Bot):
         self.first_message = 'HeyGuys'
         self.active = True
         self.chatters = []
-        
+        self.oracle = oracle.Oracle(os.environ['ENGINE'], 40)
+
         name = os.environ['BOT_NICK']
         self.history = initial_history(name).split('\n')
         
@@ -73,7 +74,7 @@ class Bot(commands.Bot):
             await self.free_reply(channel, author)
 
     async def free_reply(self, channel, author):
-        response = respond(self.history, self.nick)
+        response = self.oracle.respond(self.history, self.nick)
         if response:
             if author in response.lower() or author in self.chatters:
                 msg = response
@@ -173,7 +174,7 @@ class Bot(commands.Bot):
     async def asme(self, ctx):
         if not self.active: return
         author = ctx.author.name
-        response = respond(self.history, author)
+        response = self.oracle.respond(self.history, author)
         if response:
             msg = f'{author}: {response}'
             time.sleep(len(response)*0.01)
@@ -189,7 +190,7 @@ class Bot(commands.Bot):
             await ctx.send(f"Give me a topic to work with")
             return
 
-        h = complete_haiku(topic)
+        h = self.oracle.complete_haiku(topic)
         lines = h.split('\n')
 
         await ctx.send(f"pepegeHmm ~ {topic} ~")
@@ -202,7 +203,7 @@ class Bot(commands.Bot):
     async def best(self, ctx, *args):
         if not self.active: return
         topic = ' '.join(ctx.args).strip()
-        response = complete_best3(topic)
+        response = self.oracle.complete_best3(topic)
         lines = response.split('\n')
         if len(lines) < 3:
             await ctx.send(':|')
@@ -237,6 +238,7 @@ class Bot(commands.Bot):
         print(error)
         logging.error(error)
         await self.connected_channels[0].send("/me :boom: PepeHands there are bugs in my brain, mangort")
+
 
 if __name__ == "__main__":
     Bot().run()

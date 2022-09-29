@@ -1,8 +1,8 @@
 ### Unreleased
-- Added emote commands and mangor7Ban
+- Emote commands and mangor7Ban
 - Shout out after raid
-- Added a version command
-- Added commands page explaining all commands
+- A version command
+- Commands page explaining all commands
 
 ### Version 0.1
 - Responds to the !r command instead of just when you type his name
