@@ -1,6 +1,7 @@
 Subject to drastic changes
 
 ### Version 0.2
+- Make Shoutouts always work automatically
 - Give !best and !haiku commands some chat context
 - Create a question answering command
 
