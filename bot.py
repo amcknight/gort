@@ -2,7 +2,6 @@ import os
 import logging
 import threading
 import time
-import asyncio
 from random import choice, randrange, random
 from twitchio.ext import commands
 from twitchio.channel import Channel
@@ -89,7 +88,7 @@ class Bot(commands.Bot):
                 msg = response
             else:
                 msg = f'{response} @{author}'
-            asyncio.sleep(len(response)*0.01)
+            time.sleep(len(response)*0.01)
             await channel.send(msg)
             self.add_history(msg, self.nick)
         else:
@@ -198,7 +197,7 @@ class Bot(commands.Bot):
         response = self.oracle.respond(self.history, author)
         if response:
             msg = f'{author}: {response}'
-            asyncio.sleep(len(response)*0.01)
+            time.sleep(len(response)*0.01)
             await ctx.send(msg)
         else:
             await ctx.send(':|')
@@ -215,9 +214,9 @@ class Bot(commands.Bot):
         lines = h.split('\n')
 
         await ctx.send(f"pepegeHmm ~ {topic} ~")
-        asyncio.sleep(1)
+        time.sleep(1)
         for line in lines:
-            asyncio.sleep(0.5)
+            time.sleep(0.5)
             await ctx.send(f"/me {line.strip()}")
 
     @commands.command()
@@ -230,11 +229,11 @@ class Bot(commands.Bot):
             await ctx.send(':|')
         else:
             lines[0] = f'1. {lines[0].strip()}'
-            asyncio.sleep(0.5)
+            time.sleep(0.5)
             await ctx.send(lines[0].strip())
-            asyncio.sleep(0.3)
+            time.sleep(0.3)
             await ctx.send(lines[1].strip())
-            asyncio.sleep(0.3)
+            time.sleep(0.3)
             await ctx.send(lines[2].strip())
 
     @commands.command()
