@@ -13,12 +13,12 @@ logging.basicConfig(filename='everything.log', level=logging.INFO)
 
 class Bot(commands.Bot):
     def __init__(self):
-        self.v = '0.1.09'
+        self.v = '0.1.10'
         self.first_message = 'HeyGuys'
         self.active = True
         self.chatters = []
-        self.chime_rate = 60 * 60
-        self.chime_rate_granularity = 1.5
+        self.chime_rate = 30*60
+        self.chime_rate_granularity = 2
 
         self.oracle = oracle.Oracle(os.environ['ENGINE'], 40)
 
@@ -130,6 +130,16 @@ class Bot(commands.Bot):
             logging.info("RAW USER NOTICE:::")
             logging.info(tags)
         return await super().event_raw_usernotice(channel, tags)
+
+    async def event_join(self, channel, user):
+        name = user.name.lower()
+        if name == 'mangort':
+            self.active = True
+
+    async def event_part(self, user):
+        name = user.name.lower()
+        if name == 'mangort':
+            self.active = False
 
     @commands.command()
     async def version(self, ctx):
@@ -261,6 +271,7 @@ class Bot(commands.Bot):
         await self.default_channel().send("/me :boom: PepeHands there are bugs in my brain, mangort")
 
     def secondly(self):
+        if not self.Active: return
         if random() < 1.0 / self.chime_rate:
             response = self.oracle.respond(self.history, self.nick)
             if response:
