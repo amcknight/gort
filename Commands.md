@@ -11,6 +11,8 @@ He can be arbitrarily offensive, so just be warned that he's a bot trained on th
 
 `!chat` / `!unchat` Causes robogort to always respond to you
 
+`!chime more` / `!chime less` Causes robogort to say stuff unprovoked more or less often
+
 `!chatting` Tells you who robogort is always responding to
 
 `!reset` Wipes his short-term memory. As if he just re-entered chat

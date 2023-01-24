@@ -1,7 +1,9 @@
 import os
-import time
 import logging
-from random import choice, randrange
+import threading
+import time
+import asyncio
+from random import choice, randrange, random
 from twitchio.ext import commands
 from twitchio.channel import Channel
 import oracle
@@ -12,10 +14,13 @@ logging.basicConfig(filename='everything.log', level=logging.INFO)
 
 class Bot(commands.Bot):
     def __init__(self):
-        self.v = '0.1.08'
+        self.v = '0.1.09'
         self.first_message = 'HeyGuys'
         self.active = True
         self.chatters = []
+        self.chime_rate = 60 * 60
+        self.chime_rate_granularity = 1.5
+
         self.oracle = oracle.Oracle(os.environ['ENGINE'], 40)
 
         name = os.environ['BOT_NICK']
@@ -28,6 +33,9 @@ class Bot(commands.Bot):
             prefix='!',
             initial_channels=[os.environ['CHANNEL']]
         )
+
+    def default_channel(self):
+        return self.connected_channels[0]
 
     def is_command(self, content):
         # chr(1) is a Start of Header character that shows up invisibly in /me ACTIONs
@@ -45,7 +53,8 @@ class Bot(commands.Bot):
     async def event_ready(self):
         'Called once when the bot goes online.'
         print(f"{self.nick} is online!")
-        await self.connected_channels[0].send(self.first_message) # Need to do this when no context available
+
+        await self.default_channel().send(self.first_message) # Need to do this when no context available
 
     async def event_raw_data(self, data):
         logging.info(data)
@@ -80,7 +89,7 @@ class Bot(commands.Bot):
                 msg = response
             else:
                 msg = f'{response} @{author}'
-            time.sleep(len(response)*0.01)
+            asyncio.sleep(len(response)*0.01)
             await channel.send(msg)
             self.add_history(msg, self.nick)
         else:
@@ -91,7 +100,7 @@ class Bot(commands.Bot):
         if (words[0] == 'mangor7Ban'):
             banned = " ".join(words[1:]).strip()
             if len(banned) == 0:
-                await channel.send(f'/me {author} banned themselves LUL')
+                await channel.send(f'{author} banned themselves LUL')
             else:
                 await channel.send(f'/me {banned} has been banned for {self.random_time()}')
 
@@ -171,13 +180,25 @@ class Bot(commands.Bot):
             await ctx.send(f"You're not even near me, {author}. Don't worry, we're not chatting! LUL")
 
     @commands.command()
+    async def chime(self, ctx, *args):
+        if not self.active: return
+        subcommand = ' '.join(ctx.args).strip()
+        if subcommand == 'more':
+            self.chime_rate = self.chime_rate / self.chime_rate_granularity
+        elif subcommand == 'less':
+            self.chime_rate = self.chime_rate * self.chime_rate_granularity
+        else:
+            await ctx.send("Chime subcommands are '!chime less' or '!chime more'")
+        await ctx.send(f"Chime rate is ~{round(self.chime_rate)} seconds")
+
+    @commands.command()
     async def asme(self, ctx):
         if not self.active: return
         author = ctx.author.name
         response = self.oracle.respond(self.history, author)
         if response:
             msg = f'{author}: {response}'
-            time.sleep(len(response)*0.01)
+            asyncio.sleep(len(response)*0.01)
             await ctx.send(msg)
         else:
             await ctx.send(':|')
@@ -194,9 +215,9 @@ class Bot(commands.Bot):
         lines = h.split('\n')
 
         await ctx.send(f"pepegeHmm ~ {topic} ~")
-        time.sleep(1)
+        asyncio.sleep(1)
         for line in lines:
-            time.sleep(0.5)
+            asyncio.sleep(0.5)
             await ctx.send(f"/me {line.strip()}")
 
     @commands.command()
@@ -209,17 +230,17 @@ class Bot(commands.Bot):
             await ctx.send(':|')
         else:
             lines[0] = f'1. {lines[0].strip()}'
-            time.sleep(0.5)
+            asyncio.sleep(0.5)
             await ctx.send(lines[0].strip())
-            time.sleep(0.3)
+            asyncio.sleep(0.3)
             await ctx.send(lines[1].strip())
-            time.sleep(0.3)
+            asyncio.sleep(0.3)
             await ctx.send(lines[2].strip())
 
     @commands.command()
     async def reset(self, ctx):
         if not self.active: return
-        await ctx.send('peepoTrip I\'m reborn!')
+        await ctx.send('peepoTrip I am reborn!')
         self.history = []
 
     @commands.command()
@@ -237,8 +258,23 @@ class Bot(commands.Bot):
     async def event_error(self, error):
         print(error)
         logging.error(error)
-        await self.connected_channels[0].send("/me :boom: PepeHands there are bugs in my brain, mangort")
+        await self.default_channel().send("/me :boom: PepeHands there are bugs in my brain, mangort")
+
+    def secondly(self):
+        if random() < 1.0 / self.chime_rate:
+            response = self.oracle.respond(self.history, self.nick)
+            if response:
+                self.loop.create_task(self.default_channel().send(response))
+                self.add_history(response, self.nick)
+            
+def periodic(b):
+    while True:
+        time.sleep(1)
+        b.secondly()
 
 
 if __name__ == "__main__":
-    Bot().run()
+    bot = Bot()
+    t = threading.Thread(target=periodic, args=(bot,), daemon=True)
+    t.start()
+    bot.run()

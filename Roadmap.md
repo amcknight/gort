@@ -4,10 +4,10 @@ Subject to drastic changes
 - Make Shoutouts always work automatically
 - Give !best and !haiku commands some chat context
 - Create a question answering command
+- Should reply instead of @ing
 
 ### Version 1.0
 - Browser Source showing information about his state
-- Chimes in on his own sometimes
 
 ### Beyond
 - Takes into account what I, the streamer, am saying verbally
