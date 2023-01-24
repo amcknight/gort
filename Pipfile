@@ -4,7 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-twitchio = {git = "https://github.com/TwitchIO/TwitchIO.git", editable = true}
+twitchio = "*"
 openai = "*"
 
 [dev-packages]

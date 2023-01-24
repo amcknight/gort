@@ -27,7 +27,7 @@ class Bot(commands.Bot):
         
         super().__init__(
             token=os.environ['TMI_TOKEN'],
-            client_id=os.environ['CLIENT_ID'],
+            client_secret=os.environ['CLIENT_SECRET'],
             nick=name,
             prefix='!',
             initial_channels=[os.environ['CHANNEL']]
