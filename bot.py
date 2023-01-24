@@ -113,16 +113,17 @@ class Bot(commands.Bot):
             return f'{num} {unit}s'
 
     async def event_raw_usernotice(self, channel: Channel, tags: dict):
-        if tags['msg-id'] == 'raid':
+        id = tags['msg-id']
+        if id == 'raid':
             await channel.send(f'!so {tags["display-name"]}')
-        elif tags['msg-id'] in ['sub', 'resub', 'subgift', 'submysterygift']:
+        elif id in ['sub', 'resub', 'subgift', 'submysterygift']:
             logging.info("SUB:::")
             logging.info(tags)
             pass # Need to collect groups of gifts into a single message if using this
-        elif tags['msg-id'] == 'host':
+        elif id == 'host':
             logging.info("HOST:::")
             logging.info(tags)
-        elif tags['nsg-id'] == 'announcement':
+        elif id == 'announcement':
             logging.info("ANNOUNCE:::")
             logging.info(tags)
         else:
