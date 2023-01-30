@@ -13,7 +13,7 @@ logging.basicConfig(filename='everything.log', level=logging.INFO)
 
 class Bot(commands.Bot):
     def __init__(self):
-        self.v = '0.1.10'
+        self.v = '0.1.11'
         self.first_message = 'HeyGuys'
         self.active = True
         self.chatters = []
@@ -271,7 +271,7 @@ class Bot(commands.Bot):
         await self.default_channel().send("/me :boom: PepeHands there are bugs in my brain, mangort")
 
     def secondly(self):
-        if not self.Active: return
+        if not self.active: return
         if random() < 1.0 / self.chime_rate:
             response = self.oracle.respond(self.history, self.nick)
             if response:
