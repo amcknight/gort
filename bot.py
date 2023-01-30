@@ -13,10 +13,11 @@ logging.basicConfig(filename='log.log', level=logging.WARN)
 
 class Bot(commands.Bot):
     def __init__(self):
-        self.v = '0.1.13'
+        self.v = '0.1.14'
         self.first_message = 'HeyGuys'
         self.active = True
         self.chatters = []
+        self.mangort_here = False
         self.chime_rate = 30*60
         self.chime_rate_granularity = 2
 
@@ -67,8 +68,12 @@ class Bot(commands.Bot):
         channel = msg.channel
         content = msg.content
         author = msg.author.name
-        if author.lower() == self.nick.lower():
+        name = author.lower()
+        if name == self.nick.lower():
             return
+
+        if name == 'mangort':
+            self.mangort_here = True
 
         if self.is_command(content):
             await self.handle_commands(msg)
@@ -134,16 +139,16 @@ class Bot(commands.Bot):
     async def event_join(self, channel, user):
         name = user.name.lower()
         if name == 'mangort':
-            self.active = True
+            self.mangort_here = True
 
     async def event_part(self, user):
         name = user.name.lower()
         if name == 'mangort':
-            self.active = False
+            self.mangort_here = False
 
     @commands.command()
     async def version(self, ctx):
-        await ctx.send(f'peepoHmm v{self.v}')
+        await ctx.send(f'v{self.v}')
 
     @commands.command()
     async def r(self, ctx):
@@ -192,6 +197,7 @@ class Bot(commands.Bot):
     @commands.command()
     async def chime(self, ctx, *args):
         if not self.active: return
+        if not self.mangort_here: return
         subcommand = ' '.join(ctx.args).strip()
         if subcommand == 'more':
             self.chime_rate = self.chime_rate / self.chime_rate_granularity
