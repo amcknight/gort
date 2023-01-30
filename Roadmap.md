@@ -1,9 +1,9 @@
 Subject to drastic changes
 
 ### Version 0.2
+- Chiming should only occur when I am in chat
 - Make Shoutouts always work automatically
-- Give !best and !haiku commands some chat context
-- Create a question answering command
+- Create a !do command that uses instructgpt
 - Should reply instead of @ing
 
 ### Version 1.0
