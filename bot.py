@@ -8,12 +8,12 @@ from twitchio.channel import Channel
 import oracle
 from text import initial_history
 
-logging.basicConfig(filename='log.log', level=logging.WARN)
+logging.basicConfig(filename='log.log', level=logging.WARN, format='%(levelname)-7s:%(asctime)s> %(message)s', datefmt='%b-%d %H:%M:%S')
 
 
 class Bot(commands.Bot):
     def __init__(self):
-        self.v = '0.1.15'
+        self.v = '0.1.16'
         self.first_message = 'HeyGuys'
         self.active = True
         self.chatters = []
@@ -35,7 +35,12 @@ class Bot(commands.Bot):
         )
 
     def default_channel(self):
-        return self.connected_channels[0]
+        if not self.connected_channels:
+            logging.error('Asking for connected_channels when there are none')
+        elif len(self.connected_channels) < 1:
+            logging.error('Asking for connected_channels when they are empty')
+        else:
+            return self.connected_channels[0]
 
     def is_command(self, content):
         # chr(1) is a Start of Header character that shows up invisibly in /me ACTIONs
