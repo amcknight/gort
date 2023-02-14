@@ -17,19 +17,20 @@ class Bot(commands.Bot):
         self.first_message = 'HeyGuys'
         self.active = True
         self.chatters = []
-        self.mangort_here = False
+        self.streamer_here = False
         self.chime_rate = 30*60
         self.chime_rate_granularity = 2
+        self.streamer = 'mangort'
 
         self.oracle = oracle.Oracle(os.environ['ENGINE'], 40)
 
-        name = os.environ['BOT_NICK']
-        self.history = initial_history(name).split('\n')
+        self.name = os.environ['BOT_NICK']
+        self.history = initial_history(self.name).split('\n')
         
         super().__init__(
             token=os.environ['TMI_TOKEN'],
             client_secret=os.environ['CLIENT_SECRET'],
-            nick=name,
+            nick=self.name,
             prefix='!',
             initial_channels=[os.environ['CHANNEL']]
         )
@@ -77,8 +78,8 @@ class Bot(commands.Bot):
         if name == self.nick.lower():
             return
 
-        if name == 'mangort':
-            self.mangort_here = True
+        if name == self.streamer:
+            self.streamer_here = True
 
         if self.is_command(content):
             await self.handle_commands(msg)
@@ -143,13 +144,13 @@ class Bot(commands.Bot):
 
     async def event_join(self, channel, user):
         name = user.name.lower()
-        if name == 'mangort':
-            self.mangort_here = True
+        if name == self.streamer:
+            self.streamer_here = True
 
     async def event_part(self, user):
         name = user.name.lower()
-        if name == 'mangort':
-            self.mangort_here = False
+        if name == self.streamer:
+            self.streamer_here = False
 
     @commands.command()
     async def version(self, ctx):
@@ -162,7 +163,7 @@ class Bot(commands.Bot):
 
     @commands.command()
     async def help(self, ctx):
-        await ctx.send("Robogort commands: https://github.com/amcknight/gort/blob/main/Commands.md")
+        await ctx.send(f"{self.name} commands: https://github.com/amcknight/gort/blob/main/Commands.md")
 
     @commands.command()
     async def enter(self, ctx):
@@ -202,7 +203,7 @@ class Bot(commands.Bot):
     @commands.command()
     async def chime(self, ctx, *args):
         if not self.active: return
-        if not self.mangort_here: return
+        if not self.streamer_here: return
         subcommand = ' '.join(ctx.args).strip()
         if subcommand == 'more':
             self.chime_rate = self.chime_rate / self.chime_rate_granularity
@@ -279,7 +280,7 @@ class Bot(commands.Bot):
     async def event_error(self, error):
         print(error)
         logging.error(f"Event Error: {error}")
-        await self.default_channel().send("/me :boom: :bug: mangort")
+        await self.default_channel().send(f"/me :boom: :bug: {self.streamer}")
 
     def secondly(self):
         if not self.active: return
