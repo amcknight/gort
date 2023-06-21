@@ -280,7 +280,9 @@ class Bot(commands.Bot):
     async def event_error(self, error):
         print(error)
         logging.error(f"Event Error: {error}")
-        await self.default_channel().send(f"/me :boom: :bug: {self.streamer}")
+        channel = self.default_channel()
+        if channel:
+            await channel.send(f"/me :boom: :bug: {self.streamer}")
 
     def secondly(self):
         if not self.active: return
@@ -291,9 +293,13 @@ class Bot(commands.Bot):
                 self.add_history(response, self.nick)
             
 def periodic(b):
-    while True:
-        time.sleep(1)
-        b.secondly()
+    try:
+        while True:
+            time.sleep(1)
+            b.secondly()
+    finally:
+        print('PERIODIC stopped')
+        logging.error('PERIODIC stopped')
 
 
 if __name__ == "__main__":
