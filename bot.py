@@ -13,7 +13,7 @@ logging.basicConfig(filename='log.log', level=logging.WARN, format='%(levelname)
 
 class Bot(commands.Bot):
     def __init__(self):
-        self.v = '0.1.17'
+        self.v = '0.1.18'
         self.first_message = 'HeyGuys'
         self.active = True
         self.chatters = []
@@ -285,12 +285,17 @@ class Bot(commands.Bot):
             await channel.send(f"/me :boom: :bug: {self.streamer}")
 
     def secondly(self):
-        if not self.active: return
+        if not self.active or not self.streamer_here: return
         if random() < 1.0 / self.chime_rate:
             response = self.oracle.respond(self.history, self.nick)
             if response:
-                self.loop.create_task(self.default_channel().send(response))
-                self.add_history(response, self.nick)
+                channel = self.default_channel()
+                if channel:
+                    self.loop.create_task(channel.send(response))
+                    self.add_history(response, self.nick)
+                else:
+                    print('Secondly: NO CHANNEL')
+                    logging.warn('Secondly: NO CHANNEL')
             
 def periodic(b):
     try:

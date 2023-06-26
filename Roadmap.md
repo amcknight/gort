@@ -1,7 +1,6 @@
 Subject to drastic changes
 
 ### Version 0.2
-- Chiming should only occur when I am in chat
 - Make Shoutouts always work automatically
 - Create a !do command that uses instructgpt
 - Should reply instead of @ing
