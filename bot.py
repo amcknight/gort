@@ -2,6 +2,7 @@ import os
 import logging
 import threading
 import time
+import boto3
 from random import choice, randrange, random
 from twitchio.ext import commands
 from twitchio.channel import Channel
@@ -13,14 +14,16 @@ logging.basicConfig(filename='log.log', level=logging.WARN, format='%(levelname)
 
 class Bot(commands.Bot):
     def __init__(self):
-        self.v = '0.1.18'
+        self.v = '0.1.19'
         self.first_message = 'HeyGuys'
         self.active = True
         self.chatters = []
         self.streamer_here = False
         self.chime_rate = 30*60
+        self.inactivity_before_shutdown = 10*60
         self.chime_rate_granularity = 2
         self.streamer = 'mangort'
+        self.last_here = time.time()
 
         self.oracle = oracle.Oracle(os.environ['ENGINE'], 40)
 
@@ -284,18 +287,48 @@ class Bot(commands.Bot):
         if channel:
             await channel.send(f"/me :boom: :bug: {self.streamer}")
 
+    def get_region(self):
+        return 'us-east-2' # Hardcoded for now
+    def get_instance_id(self):
+        return 'i-093ad12750a672191' # Hardcoded for now
+
+    def stop_server(self):
+        channel = self.default_channel()
+        if channel:
+            self.loop.create_task(channel.send(":homes:"))
+        else:
+            print('Secondly: NO CHANNEL TO STOP SERVER')
+            logging.warn('Secondly: NO CHANNEL TO STOP SERVER')
+
+        ec2_client = boto3.client('ec2', region_name=self.get_region())
+        response = ec2_client.stop_instances(InstanceIds=[self.get_instance_id()])
+        code = response['ResponseMetadata']['HTTPStatusCode']
+        if code == 200:
+            print(f"EC2 instance is being stopped.")
+        else:
+            print(f"Error (code: {code}) stopping EC2 instance: {response}")
+
+    def randomly_chime(self):
+        response = self.oracle.respond(self.history, self.nick)
+        if response:
+            channel = self.default_channel()
+            if channel:
+                self.loop.create_task(channel.send(response))
+                self.add_history(response, self.nick)
+            else:
+                print('Secondly: NO CHANNEL TO CHIME')
+                logging.warn('Secondly: NO CHANNEL TO CHIME')
+
     def secondly(self):
-        if not self.active or not self.streamer_here: return
-        if random() < 1.0 / self.chime_rate:
-            response = self.oracle.respond(self.history, self.nick)
-            if response:
-                channel = self.default_channel()
-                if channel:
-                    self.loop.create_task(channel.send(response))
-                    self.add_history(response, self.nick)
-                else:
-                    print('Secondly: NO CHANNEL')
-                    logging.warn('Secondly: NO CHANNEL')
+        if self.streamer_here:
+            self.last_here = time.time()
+        else:
+            if time.time() - self.last_here > self.inactivity_before_shutdown:
+                self.stop_server()
+
+        if self.active and self.streamer_here:
+            if random() < 1.0 / self.chime_rate:
+                self.randomly_chime()
             
 def periodic(b):
     try:

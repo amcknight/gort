@@ -10,3 +10,4 @@
 - Fixed history bug which should cause much better messages
 - Added !asme, !haiku, and !best commands
 - Chimes in on his own sometimes
+- Robogort shuts his apartment down if I'm not in chat
