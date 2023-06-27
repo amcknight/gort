@@ -14,7 +14,7 @@ logging.basicConfig(filename='log.log', level=logging.WARN, format='%(levelname)
 
 class Bot(commands.Bot):
     def __init__(self):
-        self.v = '0.1.19'
+        self.v = '0.1.20'
         self.first_message = 'HeyGuys'
         self.active = True
         self.chatters = []
@@ -40,9 +40,9 @@ class Bot(commands.Bot):
 
     def default_channel(self):
         if not self.connected_channels:
-            logging.error('Asking for connected_channels when there are none')
+            logging.warn('Asking for connected_channels when there are none')
         elif len(self.connected_channels) < 1:
-            logging.error('Asking for connected_channels when they are empty')
+            logging.warn('Asking for connected_channels when they are empty')
         else:
             return self.connected_channels[0]
 
@@ -63,7 +63,8 @@ class Bot(commands.Bot):
         'Called once when the bot goes online.'
         print(f"{self.nick} is online!")
 
-        await self.default_channel().send(self.first_message) # Need to do this when no context available
+        # Need to do this when no context available
+        self.try_send(self.first_message, warning = "EVENT_READY: Couldn't send first message")
 
     async def event_raw_data(self, data):
         logging.info(data)
@@ -281,11 +282,21 @@ class Bot(commands.Bot):
             await ctx.send(f"/me is chatting with {', '.join(self.chatters[:-1])}, and {self.chatters[-1]}")
 
     async def event_error(self, error):
-        print(error)
-        logging.error(f"Event Error: {error}")
+        self.try_send(f"/me :boom: :bug: {self.streamer}", warning = f"EVENT_ERROR: {error}")
+
+    def try_send(self, msg, warning = None, error = None):
         channel = self.default_channel()
         if channel:
-            await channel.send(f"/me :boom: :bug: {self.streamer}")
+            self.loop.create_task(channel.send(msg))
+            return True
+        else:
+            if warning:
+                print(warning)
+                logging.warn(warning)
+            if error:
+                print(error)
+                logging.error(error)
+            return False
 
     def get_region(self):
         return 'us-east-2' # Hardcoded for now
@@ -293,31 +304,26 @@ class Bot(commands.Bot):
         return 'i-093ad12750a672191' # Hardcoded for now
 
     def stop_server(self):
-        channel = self.default_channel()
-        if channel:
-            self.loop.create_task(channel.send(":homes:"))
-        else:
-            print('Secondly: NO CHANNEL TO STOP SERVER')
-            logging.warn('Secondly: NO CHANNEL TO STOP SERVER')
+        self.try_send(":homes:", warning='Secondly: No channel to mention stopping server in')
 
         ec2_client = boto3.client('ec2', region_name=self.get_region())
         response = ec2_client.stop_instances(InstanceIds=[self.get_instance_id()])
         code = response['ResponseMetadata']['HTTPStatusCode']
         if code == 200:
-            print(f"EC2 instance is being stopped.")
+            msg = f"EC2 instance is being stopped"
+            print(msg)
+            logging.info(msg)
         else:
-            print(f"Error (code: {code}) stopping EC2 instance: {response}")
+            msg = f"Error (code: {code}) stopping EC2 instance: {response}"
+            print(msg)
+            logging.error(msg)
 
     def randomly_chime(self):
         response = self.oracle.respond(self.history, self.nick)
         if response:
-            channel = self.default_channel()
-            if channel:
-                self.loop.create_task(channel.send(response))
+            sent = self.try_send(response, warning = 'Secondly: No channel to chime in')
+            if sent:
                 self.add_history(response, self.nick)
-            else:
-                print('Secondly: NO CHANNEL TO CHIME')
-                logging.warn('Secondly: NO CHANNEL TO CHIME')
 
     def secondly(self):
         if self.streamer_here:
@@ -331,13 +337,21 @@ class Bot(commands.Bot):
                 self.randomly_chime()
             
 def periodic(b):
-    try:
-        while True:
+    max_error_count = 5
+    error_count = 0
+    while True:
+        try:
             time.sleep(1)
             b.secondly()
-    finally:
-        print('PERIODIC stopped')
-        logging.error('PERIODIC stopped')
+        except Exception as e:
+            error_count += 1
+            msg = f'SECONDLY EXCEPTION: {type(e)} with {e.args}'
+            print(msg)
+            logging.warn(msg)
+            if error_count > max_error_count:
+                msg = f'SECONDLY max warnings ({max_error_count}) reached. Stopping periodic.'
+                b.try_send(':clock: :boom:', error=msg)
+                break
 
 
 if __name__ == "__main__":
