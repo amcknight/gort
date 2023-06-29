@@ -14,13 +14,13 @@ logging.basicConfig(filename='log.log', level=logging.WARN, format='%(levelname)
 
 class Bot(commands.Bot):
     def __init__(self):
-        self.v = '0.1.20'
+        self.v = '0.1.21'
         self.first_message = 'HeyGuys'
         self.active = True
         self.chatters = []
         self.streamer_here = False
         self.chime_rate = 30*60
-        self.inactivity_before_shutdown = 10*60
+        self.inactivity_before_shutdown = 20*60
         self.chime_rate_granularity = 2
         self.streamer = 'mangort'
         self.last_here = time.time()
