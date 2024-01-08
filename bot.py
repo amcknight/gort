@@ -14,7 +14,7 @@ logging.basicConfig(filename='log.log', level=logging.WARN, format='%(levelname)
 
 class Bot(commands.Bot):
     def __init__(self):
-        self.v = '0.1.21'
+        self.v = '0.1.22'
         self.first_message = 'HeyGuys'
         self.active = True
         self.chatters = []
@@ -45,6 +45,9 @@ class Bot(commands.Bot):
             logging.warn('Asking for connected_channels when they are empty')
         else:
             return self.connected_channels[0]
+        
+    def is_mod(self):
+        return True  # TODO Get this info from badge or user
 
     def is_command(self, content):
         # chr(1) is a Start of Header character that shows up invisibly in /me ACTIONs
@@ -119,7 +122,7 @@ class Bot(commands.Bot):
                 await channel.send(f'/me {banned} has been banned for {self.random_time()}')
 
     def random_time(self):
-        units = ['frame', 'mushroom second', 'second', 'minute', 'hour', 'day', 'week', 'month', 'year', 'decade', 'eon']
+        units = ['frame', 'mushroom second', 'second', 'minute', 'hour', 'day', 'stream', 'week', 'fortnight', 'month', 'year', 'decade', 'lifetime', 'eon']
         unit = choice(units)
         num = randrange(100)
         if num == 1:
@@ -150,6 +153,9 @@ class Bot(commands.Bot):
         name = user.name.lower()
         if name == self.streamer:
             self.streamer_here = True
+        elif self.is_mod and name.startswith('manofsteel'):
+            await channel.send(f"/ban {name}")
+            
 
     async def event_part(self, user):
         name = user.name.lower()

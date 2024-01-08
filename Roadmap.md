@@ -1,7 +1,6 @@
 Subject to drastic changes
 
 ### Version 0.2
-- Make Shoutouts always work automatically
 - Create a !do command that uses instructgpt
 - Should reply instead of @ing
 

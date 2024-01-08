@@ -11,3 +11,5 @@
 - Added !asme, !haiku, and !best commands
 - Chimes in on his own sometimes
 - Robogort shuts his apartment down if I'm not in chat
+- Make Shoutouts always work automatically
+- Some basic autoban functionality
