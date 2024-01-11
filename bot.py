@@ -9,12 +9,12 @@ from twitchio.channel import Channel
 import oracle
 from text import initial_history
 
-logging.basicConfig(filename='log.log', level=logging.WARN, format='%(levelname)-7s:%(asctime)s> %(message)s', datefmt='%b-%d %H:%M:%S')
+logging.basicConfig(filename='log.log', level=logging.INFO, format='%(levelname)-7s:%(asctime)s> %(message)s', datefmt='%b-%d %H:%M:%S')
 
 
 class Bot(commands.Bot):
     def __init__(self):
-        self.v = '0.1.22'
+        self.v = '0.2.0'
         self.first_message = 'HeyGuys'
         self.active = True
         self.chatters = []

@@ -14,8 +14,7 @@ mangort: Yeah right, buttsbot LUL
 mangort: what do you know about Mario 64 robogort
 {name}: Not much, mangort, but I do know that it came out on N64 and is probably the most speedran game of all time.
 mangort: @robogort how are ya today
-{name}: I'm fine mangort. My batteries could use recharging though :( How are you?
-"""
+{name}: I'm fine mangort. My batteries could use recharging though :( How are you?"""
 
 def best3(topic):
     return f"""
