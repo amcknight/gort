@@ -14,7 +14,7 @@ logging.basicConfig(filename='log.log', level=logging.INFO, format='%(levelname)
 
 class Bot(commands.Bot):
     def __init__(self):
-        self.v = '0.2.0'
+        self.v = '0.2.1'
         self.first_message = 'HeyGuys'
         self.active = True
         self.chatters = []
@@ -154,7 +154,7 @@ class Bot(commands.Bot):
         if name == self.streamer:
             self.streamer_here = True
         elif self.is_mod and name.startswith('manofsteel'):
-            await channel.send(f"/ban {name}")
+            await channel.ban_user(user.id)
             
 
     async def event_part(self, user):
