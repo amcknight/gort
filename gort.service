@@ -7,9 +7,9 @@ Type=simple
 Restart=always
 RestartSec=1
 User=ec2-user
-WorkingDirectory=/git/gort
+WorkingDirectory=/home/ec2-user/git/gort
 ExecStartPre=/usr/bin/git pull
-ExecStart=pipenv run bot
+ExecStart=/home/ec2-user/.local/bin/pipenv run bot
 
 [Install]
 WantedBy=multi-user.target
