@@ -2,49 +2,34 @@
 
 A Twitch chatbot experiment for twitch.tv/mangort
 
-## Install
+## Install on EC2
 
-You need Python3.10, pipenv, and git. Detailed instructions below are for EC2.
+### Configure and Launch an Instance
 
-`sudo yum update -y`
-
-### Python 3.10
-
- Python installation instructions below are taken from [here](https://www.gcptutorials.com/post/python-3.10-installation-on-amazon-linux-2)
-
+- Choose Amazon Linux 2023 AMI
+- Select a Security Group that can TODO
+- In Advanced Settings set the User Data to:
 ```bash
-sudo yum -y groupinstall "Development Tools"
-sudo yum -y install gcc devel libffi-devel openssl11 openssl11-devel
-wget https://www.python.org/ftp/python/3.10.4/Python-3.10.4.tgz
-tar zxvf Python-3.10.4.tgz
-rm Python-3.10.4.tgz
-cd Python-3.10.4
-./configure --enable-optimizations
-make
-sudo make altinstall
-cd ..
-```
-
-### Git
-
-```bash
+#!/bin/bash
+yum update -y
+yum -y install git python3 python3-pip
+pip3 install pipenv
 cd ~
 mkdir git
 cd git
 git clone https://github.com/amcknight/gort.git
 cd gort
-```
-
-### Pipenv
-
-```bash
-pip3 install pipenv
 pipenv install
+cp gort.service /etc/systemd/system/
+systemctl enable gort
+systemctl start gort
 ```
+
+- Launch the instance
 
 ### Set environment variables
 
-Set these environment variables. I recommend just creating a file called `.env` and putting it in the `gort` folder with these filled in.
+I just create a file called `.env` in the `gort` folder with these filled in:
 
 ```env
 TMI_TOKEN=<TMI TOKEN>
@@ -56,8 +41,6 @@ OPENAI_API_KEY=<OPENAI API KEY>
 AWS_ACCESS_KEY_ID=<AWS ACCESS KEY>
 AWS_SECRET_ACCESS_KEY=<AWS SECRET KEY>
 ```
-
-## Running Gort
 
 ### Manually
 
