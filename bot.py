@@ -14,7 +14,7 @@ logging.basicConfig(filename='log.log', level=logging.INFO, format='%(levelname)
 
 class Bot(commands.Bot):
     def __init__(self):
-        self.v = '0.2.1'
+        self.v = '0.2.02'
         self.first_message = 'HeyGuys'
         self.active = True
         self.chatters = []
@@ -153,7 +153,8 @@ class Bot(commands.Bot):
         name = user.name.lower()
         if name == self.streamer:
             self.streamer_here = True
-        elif self.is_mod and name.startswith('manofsteel'):
+        elif self.is_mod() and name.startswith('manofsteel'):
+            logging.info(f"Attempting ban of {name}")
             await channel.ban_user(user.id)
             
 
@@ -246,7 +247,7 @@ class Bot(commands.Bot):
         h = self.oracle.complete_haiku(topic)
         lines = h.split('\n')
 
-        await ctx.send(f"pepegeHmm ~ {topic} ~")
+        await ctx.send(f"tThink ~ {topic} ~")
         time.sleep(1)
         for line in lines:
             time.sleep(0.5)
