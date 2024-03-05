@@ -34,8 +34,8 @@ class Oracle(completer.Completer):
 
     last_ask = [None, None]
 
-    def __init__(self, engine, max_tokens, **kwargs):
-        super().__init__(engine, max_tokens, **kwargs)
+    def __init__(self, max_tokens, **kwargs):
+        super().__init__(max_tokens, **kwargs)
 
     def preprompt(self):
         prom = self.preamble + '\n\n'

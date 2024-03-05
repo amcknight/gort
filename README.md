@@ -16,16 +16,22 @@ cd gort
 pipenv install
 ```
 
-Set environment variables. I just create a file called `.env` in the `gort` folder with these filled in:
+Set environment variables. I just create a file called `.env` in the `gort` folder.
+
+Either fill them with sensitive keys directly:
 ```env
-TMI_TOKEN=<TMI TOKEN>
-CLIENT_ID=<CLIENT ID>
 BOT_NICK=<BOT NAME>
 CHANNEL=<TWITCH CHANNEL NAME>
-ENGINE=<OPENAI ENGINE>
+TMI_TOKEN=<TMI TOKEN>
+CLIENT_ID=<CLIENT ID>
 OPENAI_API_KEY=<OPENAI API KEY>
-AWS_ACCESS_KEY_ID=<AWS ACCESS KEY>
-AWS_SECRET_ACCESS_KEY=<AWS SECRET KEY>
+```
+Or point to those sensitive values in Amazon Secrets Manager and make sure your server is given an IAM Role to access them.
+```env
+BOT_NICK=<BOT NAME>
+CHANNEL=<TWITCH CHANNEL NAME>
+SECRETS_NAME=<AMAZON SECRETS NAME>
+SECRETS_REGION=<AMAZON SECRETS REGION>
 ```
 
 ## Run

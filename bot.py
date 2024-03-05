@@ -1,4 +1,3 @@
-import os
 import logging
 import threading
 import time
@@ -7,14 +6,18 @@ from random import choice, randrange, random
 from twitchio.ext import commands
 from twitchio.channel import Channel
 import oracle
+from env import Env
 from text import initial_history
+
 
 logging.basicConfig(filename='log.log', level=logging.INFO, format='%(levelname)-7s:%(asctime)s> %(message)s', datefmt='%b-%d %H:%M:%S')
 
 
 class Bot(commands.Bot):
     def __init__(self):
-        self.v = '0.2.02'
+        env = Env()
+        
+        self.v = '0.2.03'
         self.first_message = 'HeyGuys'
         self.active = True
         self.chatters = []
@@ -25,17 +28,17 @@ class Bot(commands.Bot):
         self.streamer = 'mangort'
         self.last_here = time.time()
 
-        self.oracle = oracle.Oracle(os.environ['ENGINE'], 40)
+        self.oracle = oracle.Oracle(40)
 
-        self.name = os.environ['BOT_NICK']
+        self.name = env.bot_nick
         self.history = initial_history(self.name).split('\n')
         
         super().__init__(
-            token=os.environ['TMI_TOKEN'],
-            client_secret=os.environ['CLIENT_SECRET'],
+            token=env.tmi_token,
+            client_secret=env.client_secret,
             nick=self.name,
             prefix='!',
-            initial_channels=[os.environ['CHANNEL']]
+            initial_channels=[env.channel]
         )
 
     def default_channel(self):

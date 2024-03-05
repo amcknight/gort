@@ -5,10 +5,9 @@ class Completer():
     def __delitem__(self, k):
         pass  # TODO: Look into what this is for
 
-    def __init__(self, engine, max_tokens, **kwargs):
+    def __init__(self, max_tokens, **kwargs):
         super().__init__(**kwargs)
         self.max_tokens = max_tokens
-        self.engine = engine
         self.client = OpenAI()
 
     def complete(self, prompt, stops=None):
@@ -19,7 +18,7 @@ class Completer():
     def gpt3_base(self, prompt, stops=None):
         import openai
         response = openai.Completion.create(
-            engine=self.engine,
+            engine='davinci',
             max_tokens=self.max_tokens,
             prompt=prompt,
             stop=stops
@@ -45,14 +44,9 @@ class Completer():
                 {"role": "user", "content": prompt},
             ]
         )
-        print(response)
         choices = response.choices
-        print(choices)
         choice = choices[0]
-        print(choice)
         message = choice.message
-        print(message)
         text = message.content
-        print(text)
         return text
     

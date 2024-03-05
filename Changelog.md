@@ -1,4 +1,5 @@
 ### Unreleased
+- Allowed Environment Variables to be stored in Amazon Secrets Manager 
 - Emote commands and mangor7Ban
 - Shout out after raid
 - A version command
