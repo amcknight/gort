@@ -28,7 +28,7 @@ class Completer():
 
     def gpt35_turbo(self, prompt):
         if not hasattr(self, 'client'):
-            self.client = OpenAI(api_key=env.openai_api_key, max_tokens=self.max_tokens)
+            self.client = OpenAI(api_key=env.openai_api_key)
         
         system_prompt = """
             Just complete the next few lines of response from the prompt given. Nothing extra.

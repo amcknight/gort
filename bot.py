@@ -15,7 +15,7 @@ logging.basicConfig(filename='log.log', level=logging.INFO, format='%(levelname)
 
 class Bot(commands.Bot):
     def __init__(self):
-        self.v = '0.3.00'
+        self.v = '0.3.01'
         self.first_message = 'HeyGuys'
         self.active = True
         self.chatters = []
@@ -366,4 +366,8 @@ if __name__ == "__main__":
     bot = Bot()
     t = threading.Thread(target=periodic, args=(bot,), daemon=True)
     t.start()
-    bot.run()
+    try:
+        bot.run()
+    except Exception as e:
+        logging.error(e)
+        raise e
