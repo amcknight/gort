@@ -47,4 +47,4 @@ sudo systemctl enable gort
 sudo systemctl start gort
 ```
 
-The restarting the service will auto-upgrade with `git pull` before running `pipenv run bot`.
+Restarting the service will auto-upgrade with `git pull` before running `pipenv run bot`.
