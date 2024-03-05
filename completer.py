@@ -1,24 +1,24 @@
 from openai import OpenAI
 import inspect
+from env import env
 
 class Completer():
-    def __delitem__(self, k):
-        pass  # TODO: Look into what this is for
-
-    def __init__(self, max_tokens, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self, max_tokens):
         self.max_tokens = max_tokens
-        self.client = OpenAI()
 
     def complete(self, prompt, stops=None):
         # The main prompt completer
-        return self.gpt35_turbo(prompt)
+        if env.completer == 'gpt3.5':
+            return self.gpt35_turbo(prompt)
+        elif env.completer == 'gpt3':
+            return self.gpt3_base(prompt, stops=stops)
         
     
     def gpt3_base(self, prompt, stops=None):
         import openai
         response = openai.Completion.create(
-            engine='davinci',
+            api_key=env.openai_api_key,
+            engine=env.engine,
             max_tokens=self.max_tokens,
             prompt=prompt,
             stop=stops
@@ -27,6 +27,9 @@ class Completer():
         return text
 
     def gpt35_turbo(self, prompt):
+        if not hasattr(self, 'client'):
+            self.client = OpenAI(api_key=env.openai_api_key, max_tokens=self.max_tokens)
+        
         system_prompt = """
             Just complete the next few lines of response from the prompt given. Nothing extra.
             Try not to write for other people. Only robogort.

@@ -6,7 +6,7 @@ from random import choice, randrange, random
 from twitchio.ext import commands
 from twitchio.channel import Channel
 import oracle
-from env import Env
+from env import env
 from text import initial_history
 
 
@@ -15,8 +15,6 @@ logging.basicConfig(filename='log.log', level=logging.INFO, format='%(levelname)
 
 class Bot(commands.Bot):
     def __init__(self):
-        env = Env()
-        
         self.v = '0.2.03'
         self.first_message = 'HeyGuys'
         self.active = True
