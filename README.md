@@ -20,18 +20,20 @@ Set environment variables. I just create a file called `.env` in the `gort` fold
 
 Either fill them with sensitive keys directly:
 ```env
-BOT_NICK=<BOT NAME>
-CHANNEL=<TWITCH CHANNEL NAME>
 TMI_TOKEN=<TMI TOKEN>
 CLIENT_ID=<CLIENT ID>
 OPENAI_API_KEY=<OPENAI API KEY>
+BOT_NICK=<BOT NAME>
+CHANNEL=<TWITCH CHANNEL NAME>
+COMPLETER=gpt3.5
 ```
 Or point to those sensitive values in Amazon Secrets Manager and make sure your server is given an IAM Role to access them.
 ```env
-BOT_NICK=<BOT NAME>
-CHANNEL=<TWITCH CHANNEL NAME>
 SECRETS_NAME=<AMAZON SECRETS NAME>
 SECRETS_REGION=<AMAZON SECRETS REGION>
+BOT_NICK=<BOT NAME>
+CHANNEL=<TWITCH CHANNEL NAME>
+COMPLETER=gpt3.5
 ```
 
 ## Run

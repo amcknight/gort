@@ -1,8 +1,11 @@
 ### Unreleased
-- Allowed Environment Variables to be stored in Amazon Secrets Manager 
+
+### Version 0.3
+- Configurable Completer
+- Allowed Environment Variables to be stored in Amazon Secrets Manager
 - Emote commands and mangor7Ban
 - Shout out after raid
-- A version command
+- Version command
 - Commands page explaining all commands
 
 ### Version 0.2
