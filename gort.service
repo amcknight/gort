@@ -9,6 +9,7 @@ RestartSec=1
 User=ec2-user
 WorkingDirectory=/home/ec2-user/git/gort
 ExecStartPre=/usr/bin/git pull
+ExecStartPre=/home/ec2-user/.local/bin/pipenv install
 ExecStart=/home/ec2-user/.local/bin/pipenv run bot
 
 [Install]
