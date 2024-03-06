@@ -15,7 +15,7 @@ logging.basicConfig(filename='log.log', level=logging.INFO, format='%(levelname)
 
 class Bot(commands.Bot):
     def __init__(self):
-        self.v = '0.3.01'
+        self.v = '0.3.02'
         self.first_message = 'HeyGuys'
         self.active = True
         self.chatters = []
