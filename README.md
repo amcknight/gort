@@ -1,6 +1,6 @@
 # Gort
 
-A Twitch chatbot experiment for twitch.tv/mangort
+A Twitch chatbot experiment for https://www.twitch.tv/mangort
 
 ## Install
 
@@ -20,8 +20,8 @@ Set environment variables. I just create a file called `.env` in the `gort` fold
 
 Either fill them with sensitive keys directly:
 ```env
-TMI_TOKEN=<TMI TOKEN>
-CLIENT_ID=<CLIENT ID>
+TMI_TOKEN=<TMI TOKEN> # Got from (https://twitchapps.com/tmi)
+CLIENT_ID=<CLIENT ID> # Got from (https://dev.twitch.tv/console/apps) after registering the app
 OPENAI_API_KEY=<OPENAI API KEY>
 BOT_NICK=<BOT NAME>
 CHANNEL=<TWITCH CHANNEL NAME>

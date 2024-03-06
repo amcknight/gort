@@ -20,9 +20,10 @@ class _Env():
             return False # Silently fails to load from Amazon Secrets Manager
 
     def set_env(self):
-        self.tmi_token = self.get('TMI_TOKEN')
-        self.client_secret = self.get('CLIENT_SECRET')
         self.bot_nick = self.get('BOT_NICK')
+        upnick = self.bot_nick.upper()
+        self.tmi_token = self.get('TMI_TOKEN', fallback=f"{upnick}_TMI_TOKEN")
+        self.client_secret = self.get('CLIENT_SECRET', fallback=f"{upnick}_CLIENT_SECRET")
         self.channel = self.get('CHANNEL')
         self.completer = self.get('COMPLETER')
 
@@ -34,17 +35,18 @@ class _Env():
         else:
             raise ValueError(f'Invalid completer "{self.completer}"')
 
-    def get(self, key):
+    def get(self, key, fallback=None):
         try:
             return os.environ[key]
         except KeyError as e:
             if not self.secret:
                 raise e
-        
-            val = self.secret[key]
-            if not val:
-                raise e
             
-            return val
+            try:
+                return self.secret[key]
+            except KeyError as e:
+                if fallback:
+                    return self.secret[fallback]
+                raise e
 
 env = _Env()
