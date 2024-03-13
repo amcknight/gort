@@ -6,8 +6,8 @@ A Twitch chatbot experiment for https://www.twitch.tv/mangort
 
 Install git, python, pip, and gort using yum
 ```bash
-sudo yum update -y
-sudo yum -y install git python3 python3-pip
+sudo dnf update -y
+sudo dnf -y install git python3 python3-pip
 pip3 install pipenv
 mkdir git
 cd git
