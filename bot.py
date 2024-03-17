@@ -2,6 +2,9 @@ import logging
 import threading
 import time
 import boto3
+import traceback
+from requests import exceptions
+from ec2_metadata import ec2_metadata
 from random import choice, randrange, random
 from twitchio.ext import commands
 from twitchio.channel import Channel
@@ -15,13 +18,13 @@ logging.basicConfig(filename='log.log', level=logging.INFO, format='%(levelname)
 
 class Bot(commands.Bot):
     def __init__(self):
-        self.v = '0.3.03'
+        self.v = '0.3.04'
         self.first_message = 'HeyGuys'
         self.active = True
         self.chatters = []
         self.streamer_here = False
         self.chime_rate = 30*60
-        self.inactivity_before_shutdown = 20*60
+        self.inactivity_before_shutdown = 15*60
         self.chime_rate_granularity = 2
         self.streamer = 'mangort'
         self.last_here = time.time()
@@ -41,9 +44,9 @@ class Bot(commands.Bot):
 
     def default_channel(self):
         if not self.connected_channels:
-            logging.warn('Asking for connected_channels when there are none')
+            logging.warning('Asking for connected_channels when there are none')
         elif len(self.connected_channels) < 1:
-            logging.warn('Asking for connected_channels when they are empty')
+            logging.warning('Asking for connected_channels when they are empty')
         else:
             return self.connected_channels[0]
         
@@ -300,31 +303,29 @@ class Bot(commands.Bot):
         else:
             if warning:
                 print(warning)
-                logging.warn(warning)
+                logging.warning(warning)
             if error:
                 print(error)
                 logging.error(error)
             return False
 
-    def get_region(self):
-        return 'us-east-2' # Hardcoded for now
-    def get_instance_id(self):
-        return 'i-093ad12750a672191' # Hardcoded for now
-
     def stop_server(self):
         self.try_send(":homes:", warning='Secondly: No channel to mention stopping server in')
 
-        ec2_client = boto3.client('ec2', region_name=self.get_region())
-        response = ec2_client.stop_instances(InstanceIds=[self.get_instance_id()])
-        code = response['ResponseMetadata']['HTTPStatusCode']
-        if code == 200:
-            msg = f"EC2 instance is being stopped"
-            print(msg)
-            logging.info(msg)
-        else:
-            msg = f"Error (code: {code}) stopping EC2 instance: {response}"
-            print(msg)
-            logging.error(msg)
+        try:
+            ec2_client = boto3.client('ec2', region_name=ec2_metadata.region)
+            response = ec2_client.stop_instances(InstanceIds=[ec2_metadata.instance_id])
+            code = response['ResponseMetadata']['HTTPStatusCode']
+            if code == 200:
+                msg = f"EC2 instance is being stopped"
+                print(msg)
+                logging.info(msg)
+            else:
+                msg = f"Error (code: {code}) stopping EC2 instance: {response}"
+                print(msg)
+                logging.error(msg)
+        except exceptions.ConnectionError as e:
+            pass # Couldn't get region or instabnce ID so not shutting self down
 
     def randomly_chime(self):
         response = self.oracle.respond(self.history, self.nick)
@@ -355,10 +356,12 @@ def periodic(b):
             error_count += 1
             msg = f'SECONDLY EXCEPTION: {type(e)} with {e.args}'
             print(msg)
-            logging.warn(msg)
+            logging.warning(msg)
             if error_count > max_error_count:
+                trace = ''.join(traceback.format_exception(e))
+                print(trace)
                 msg = f'SECONDLY max warnings ({max_error_count}) reached. Stopping periodic.'
-                b.try_send(':clock: :boom:', error=msg)
+                b.try_send(':clock: :boom:', error=trace)
                 break
 
 

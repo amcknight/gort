@@ -7,6 +7,7 @@ name = "pypi"
 twitchio = "*"
 openai = "*"
 boto3 = "*"
+ec2-metadata = "*"
 
 [dev-packages]
 pylint = "*"
