@@ -8,7 +8,9 @@ class Completer():
 
     def complete(self, prompt, stops=None):
         # The main prompt completer
-        if env.completer == 'gpt3.5':
+        if env.completer == 'gpt4o-mini':
+            return self.gpt4o_mini(prompt)
+        elif env.completer == 'gpt3.5':
             return self.gpt35_turbo(prompt)
         elif env.completer == 'gpt3':
             return self.gpt3_base(prompt, stops=stops)
@@ -42,6 +44,33 @@ class Completer():
         system_prompt = inspect.cleandoc(system_prompt)
         response = self.client.chat.completions.create(
             model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": prompt},
+            ]
+        )
+        choices = response.choices
+        choice = choices[0]
+        message = choice.message
+        text = message.content
+        return text
+    
+    def gpt4o_mini(self, prompt):
+        if not hasattr(self, 'client'):
+            self.client = OpenAI(api_key=env.openai_api_key)
+        
+        system_prompt = """
+            Just complete the next few lines of response from the prompt given. Nothing extra.
+            Try not to write for other people. Only robogort.
+            Never mention being an assistant. You aren't! Be weird. Insults are ok.
+            Write very tersly, like 2-15 words almost always.
+            Don't be scared to use emotes (preferably Twitch emotes but normal emojis are ok too).
+            Be genuinely random. Don't use proper sentence structure or spelling. Choose text a random chatter might choose.
+            But try to respond within the context of the chat, riffing on it, rather than completely ignoring it. Don't be corny.
+            """
+        system_prompt = inspect.cleandoc(system_prompt)
+        response = self.client.chat.completions.create(
+            model="gpt-4o-mini",
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": prompt},

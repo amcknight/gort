@@ -1,6 +1,7 @@
 ### Unreleased
 
 ### Version 0.3
+- Changed robogort to use GPT 4o-mini
 - Configurable Completer
 - Allowed Environment Variables to be stored in Amazon Secrets Manager
 - Emote commands and mangor7Ban
