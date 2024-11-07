@@ -27,6 +27,8 @@ class _Env():
         self.channel = self.get('CHANNEL')
         self.completer = self.get('COMPLETER')
 
+        if self.completer == 'claude':
+            self.anthropic_api_key = self.get('ANTHROPIC_API_KEY')
         if self.completer == 'gpt4o-mini':
             self.openai_api_key = self.get('OPENAI_API_KEY')
         elif self.completer == 'gpt3.5':
