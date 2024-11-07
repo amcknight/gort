@@ -6,6 +6,7 @@ name = "pypi"
 [packages]
 twitchio = "*"
 openai = "*"
+anthropic = "*"
 boto3 = "*"
 ec2-metadata = "*"
 

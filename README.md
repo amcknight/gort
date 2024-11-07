@@ -23,6 +23,7 @@ Either fill them with sensitive keys directly:
 TMI_TOKEN=<TMI TOKEN> # Got from (https://twitchapps.com/tmi)
 CLIENT_ID=<CLIENT ID> # Got from (https://dev.twitch.tv/console/apps) after registering the app
 OPENAI_API_KEY=<OPENAI API KEY>
+ANTHROPIC_API_KEY=<ANTHROPIC API KEY>
 BOT_NICK=<BOT NAME>
 CHANNEL=<TWITCH CHANNEL NAME>
 COMPLETER=gpt3.5
