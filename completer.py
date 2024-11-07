@@ -1,8 +1,10 @@
+import logging
 from openai import OpenAI
 import anthropic
 import inspect
 from env import env
 
+logging.basicConfig(filename='log.log', level=logging.INFO, format='%(levelname)-7s:%(asctime)s> %(message)s', datefmt='%b-%d %H:%M:%S')
 
 class Completer():
     def __init__(self, max_tokens):
@@ -18,6 +20,8 @@ class Completer():
             return self.gpt3_base(prompt, stops=stops)
         elif env.completer == 'claude':
             return self.claude(prompt)
+        else:
+            logging.errer(f'No completer named "{env.completer}"')
         
     default_system_prompt = """
         Just complete the next few lines of response from the prompt given. Nothing extra.

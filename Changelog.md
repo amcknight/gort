@@ -1,5 +1,8 @@
 ### Unreleased
 
+### Version 0.4
+- Claude support
+
 ### Version 0.3
 - Changed robogort to use GPT 4o-mini
 - Configurable Completer
