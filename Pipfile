@@ -7,8 +7,8 @@ name = "pypi"
 twitchio = "*"
 openai = "*"
 anthropic = "*"
-boto3 = "*"
 ec2-metadata = "*"
+boto3 = "*"
 
 [dev-packages]
 pylint = "*"
@@ -17,5 +17,4 @@ pylint = "*"
 python_version = "*"
 
 [scripts]
-bot = "python3 ./bot.py"
-battle = "python3 ./battle.py"
+bot = "python ./bot.py"
