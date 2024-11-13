@@ -29,7 +29,7 @@ class _Env():
 
         if self.completer == 'claude':
             self.anthropic_api_key = self.get('ANTHROPIC_API_KEY')
-        if self.completer == 'gpt4o-mini':
+        elif self.completer == 'gpt4o-mini':
             self.openai_api_key = self.get('OPENAI_API_KEY')
         elif self.completer == 'gpt3.5':
             self.openai_api_key = self.get('OPENAI_API_KEY')

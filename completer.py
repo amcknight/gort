@@ -97,5 +97,7 @@ class Completer():
                 }]
             }]
         )
-        text = response.content
+        contents = response.content
+        content = contents[0]
+        text = content.text
         return text
