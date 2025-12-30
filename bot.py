@@ -168,7 +168,7 @@ class Bot(commands.Bot):
         if name == self.streamer:
             self.streamer_here = False
 
-    @commands.command()
+    @commands.command(aliases=['v'])
     async def version(self, ctx):
         await ctx.send(f'v{self.v}')
 
@@ -181,7 +181,7 @@ class Bot(commands.Bot):
     async def help(self, ctx):
         await ctx.send(f"{self.name} commands: https://github.com/amcknight/gort/blob/main/Commands.md")
 
-    @commands.command()
+    @commands.command(aliases=['arrive'])
     async def enter(self, ctx):
         if self.active:
             await ctx.send(f"/me OOOO I'm already here! OOOO")
