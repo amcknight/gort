@@ -1,12 +1,20 @@
 import completer
+import inspect
 from text import best3, haiku
 
 
 class Oracle(completer.Completer):
 
-    preamble = """My name is 'robogort' and I am an honest and highly intelligent Super Mario World Romhack question answering bot. I will answer questions as truthfully as possible in a single sentence. If you ask me a question I am unsure about, is nonsense, or has no clear answer, I will respond with "PASS"."""
+    preamble = """
+        My name is 'robogort' and I am an honest and highly intelligent Super Mario World Romhack question answering bot.
+        I will answer questions as truthfully as possible in a single sentence.
+        If you ask me a question I am unsure about, is nonsense, or has no clear answer, I will respond with "PASS".
+        """
 
-    respond_preamble = """This is an ongoing intelligent and fun conversation happening on a twitch stream chat. This is the transcript:"""
+    respond_preamble = """
+        This is an ongoing intelligent and fun conversation happening on a twitch stream chat.
+        This is the transcript:
+        """
 
     haiku_system_prompt = """
         Complete the haiku following the examples provided.
@@ -51,7 +59,7 @@ class Oracle(completer.Completer):
         super().__init__(max_tokens, **kwargs)
 
     def preprompt(self):
-        prom = self.preamble + '\n\n'
+        prom = inspect.cleandoc(self.preamble) + '\n\n'
         for (question, answer) in self.qa_pairs:
             prom += self.question_prefix + ' ' + question + '\n' + self.answer_prefix + ' ' + answer + '\n'
             prom += self.qa_pair_delimiter + '\n'
