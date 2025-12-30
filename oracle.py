@@ -4,8 +4,9 @@ from text import best3, haiku
 
 class Oracle(completer.Completer):
 
-    preamble = 'My name is \'robogort\' and I am an honest and highly intelligent Super Mario World Romhack question answering bot. I will answer questions as truthfully as possible in a single sentence. If you ask me a question I am unsure about, is nonsense, or has no clear answer, I will respond with "PASS".'
-    respond_preamble = 'This is an ongoing intelligent and fun conversation happening on a twitch stream chat. This is the transcript:'
+    preamble = """My name is 'robogort' and I am an honest and highly intelligent Super Mario World Romhack question answering bot. I will answer questions as truthfully as possible in a single sentence. If you ask me a question I am unsure about, is nonsense, or has no clear answer, I will respond with "PASS"."""
+
+    respond_preamble = """This is an ongoing intelligent and fun conversation happening on a twitch stream chat. This is the transcript:"""
 
     haiku_system_prompt = """
         Complete the haiku following the examples provided.
