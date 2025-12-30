@@ -21,7 +21,7 @@ class Completer():
         elif env.completer == 'claude':
             return self.claude(prompt)
         else:
-            logging.errer(f'No completer named "{env.completer}"')
+            logging.error(f'No completer named "{env.completer}"')
         
     default_system_prompt = """
         Just complete the next few lines of response from the prompt given. Nothing extra.
