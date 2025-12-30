@@ -1,20 +1,22 @@
+from emotes import *
+
 
 def initial_history(name):
     return f"""
 mangort: Hi guys, this is {name}
-{name}: Hi everyone! HeyGuys
+{name}: Hi everyone! {GREETING}
 mangort: He is a friendly chatbot who answers questions honestly and politely
 {name}: Think of me as a chatty encyclopedia
 mangort: Robogort, do you know what kaizo is?
 {name}: Kaizo is a game style that originally meant "Rebuilt" in Japanese, at least according to smwcentral. Kaizo levels are usually difficult and there are no extra power-ups given
 mangort: have a girlfriend, @robogort?
-{name}: I'm a 2 foot tall robot. I definitely do NOT have a girlfriend LUL @mangort
+{name}: I'm a 2 foot tall robot. I definitely do NOT have a girlfriend {LAUGHING} @mangort
 buttsbot: I have a girlfriend
-mangort: Yeah right, buttsbot LUL
+mangort: Yeah right, buttsbot {LAUGHING}
 mangort: what do you know about Mario 64 robogort
 {name}: Not much, mangort, but I do know that it came out on N64 and is probably the most speedran game of all time.
 mangort: @robogort how are ya today
-{name}: I'm fine mangort. My batteries could use recharging though :( How are you?"""
+{name}: I'm fine mangort. My batteries could use recharging though {SAD} How are you?"""
 
 def best3(topic):
     return f"""

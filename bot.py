@@ -11,6 +11,7 @@ from twitchio.channel import Channel
 import oracle
 from env import env
 from text import initial_history
+from emotes import *
 
 
 logging.basicConfig(filename='log.log', level=logging.INFO, format='%(levelname)-7s:%(asctime)s> %(message)s', datefmt='%b-%d %H:%M:%S')
@@ -19,7 +20,7 @@ logging.basicConfig(filename='log.log', level=logging.INFO, format='%(levelname)
 class Bot(commands.Bot):
     def __init__(self):
         self.v = '0.4.04'
-        self.first_message = 'HeyGuys'
+        self.first_message = GREETING
         self.active = True
         self.chatters = []
         self.streamer_here = False
@@ -114,14 +115,14 @@ class Bot(commands.Bot):
             await channel.send(msg)
             self.add_history(msg, self.nick)
         else:
-            await channel.send(':|')
+            await channel.send(CONFUSED)
 
     async def handle_emote_command(self, channel, content, author):
         words = content.split(' ')
         if (words[0] == 'mangor7Ban'):
             banned = " ".join(words[1:]).strip()
             if len(banned) == 0:
-                await channel.send(f'{author} banned themselves LUL')
+                await channel.send(f'{author} banned themselves {LAUGHING}')
             else:
                 await channel.send(f'/me {banned} has been banned for {self.random_time()}')
 
@@ -185,13 +186,13 @@ class Bot(commands.Bot):
         if self.active:
             await ctx.send(f"/me OOOO I'm already here! OOOO")
         else:
-            await ctx.send(f"/me I'm back peepoArrive")
+            await ctx.send(f"/me I'm back {ARRIVE}")
             self.active = True
 
     @commands.command()
     async def leave(self, ctx):
         if not self.active: return
-        await ctx.send(f'/me I\'m out. peepoLeave')
+        await ctx.send(f'/me I\'m out. {LEAVE}')
         self.chatters = []
         self.active = False
 
@@ -200,7 +201,7 @@ class Bot(commands.Bot):
         if not self.active: return
         author = ctx.author.name
         if author in self.chatters:
-            await ctx.send(f"You've already approached me, {author}. Back up a bit! LUL")
+            await ctx.send(f"You've already approached me, {author}. Back up a bit! {LAUGHING}")
         else:
             self.chatters.append(author)
             await ctx.send(f"/me and {author} gathered")
@@ -213,7 +214,7 @@ class Bot(commands.Bot):
             self.chatters.remove(author)
             await ctx.send(f"/me and {author} disbanded")
         else:
-            await ctx.send(f"You're not even near me, {author}. Don't worry, we're not chatting! LUL")
+            await ctx.send(f"You're not even near me, {author}. Don't worry, we're not chatting! {LAUGHING}")
 
     @commands.command()
     async def chime(self, ctx, *args):
@@ -238,7 +239,7 @@ class Bot(commands.Bot):
             time.sleep(len(response)*0.01)
             await ctx.send(msg)
         else:
-            await ctx.send(':|')
+            await ctx.send(CONFUSED)
 
     @commands.command()
     async def haiku(self, ctx, *args):
@@ -251,7 +252,7 @@ class Bot(commands.Bot):
         h = self.oracle.complete_haiku(topic)
         lines = h.split('\n')
 
-        await ctx.send(f"tThink ~ {topic} ~")
+        await ctx.send(f"{THINKING} ~ {topic} ~")
         time.sleep(1)
         for line in lines:
             time.sleep(0.5)
@@ -264,7 +265,7 @@ class Bot(commands.Bot):
         response = self.oracle.complete_best3(topic)
         lines = response.split('\n')
         if len(lines) < 3:
-            await ctx.send(':|')
+            await ctx.send(CONFUSED)
         else:
             lines[0] = f'1. {lines[0].strip()}'
             time.sleep(0.5)
@@ -277,7 +278,7 @@ class Bot(commands.Bot):
     @commands.command()
     async def reset(self, ctx):
         if not self.active: return
-        await ctx.send('peepoTrip I am reborn!')
+        await ctx.send(f'{RESET} I am reborn!')
         self.history = []
 
     @commands.command()
