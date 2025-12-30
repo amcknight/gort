@@ -1,8 +1,8 @@
 # Bot State Changes
 GREETING = 'HeyGuys'
-ARRIVE = 'peepoArrive'
-LEAVE = 'peepoLeave'
-RESET = 'peepoTrip'
+ARRIVE = 'SamArrive'
+LEAVE = 'ppLeave'
+RESET = 'HUHH'
 
 # Response Emotions
 CONFUSED = ':|'
