@@ -32,7 +32,13 @@ class Completer():
         Be genuinely random. Don't use proper sentence structure or spelling. Choose text a random chatter might choose.
         But try to respond within the context of the chat, riffing on it, rather than completely ignoring it.
         """
-    
+
+    def _get_system_prompt(self, system_prompt=None):
+        if system_prompt is None:
+            return inspect.cleandoc(self.default_system_prompt)
+        else:
+            return inspect.cleandoc(system_prompt)
+
     def gpt3_base(self, prompt, stops=None):
         import openai
         response = openai.Completion.create(
@@ -49,10 +55,7 @@ class Completer():
         if not hasattr(self, 'client'):
             self.client = OpenAI(api_key=env.openai_api_key)
 
-        if system_prompt is None:
-            system_prompt = inspect.cleandoc(self.default_system_prompt)
-        else:
-            system_prompt = inspect.cleandoc(system_prompt)
+        system_prompt = self._get_system_prompt(system_prompt)
         response = self.client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[
@@ -70,10 +73,7 @@ class Completer():
         if not hasattr(self, 'client'):
             self.client = OpenAI(api_key=env.openai_api_key)
 
-        if system_prompt is None:
-            system_prompt = inspect.cleandoc(self.default_system_prompt)
-        else:
-            system_prompt = inspect.cleandoc(system_prompt)
+        system_prompt = self._get_system_prompt(system_prompt)
         response = self.client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
@@ -89,10 +89,7 @@ class Completer():
     
     def claude(self, prompt, system_prompt=None):
         self.client = anthropic.Anthropic(api_key=env.anthropic_api_key)
-        if system_prompt is None:
-            system_prompt = inspect.cleandoc(self.default_system_prompt)
-        else:
-            system_prompt = inspect.cleandoc(system_prompt)
+        system_prompt = self._get_system_prompt(system_prompt)
         response = self.client.messages.create(
             model="claude-3-5-sonnet-20241022",
             max_tokens=self.max_tokens,
