@@ -6,6 +6,18 @@ class Oracle(completer.Completer):
 
     preamble = 'My name is \'robogort\' and I am an honest and highly intelligent Super Mario World Romhack question answering bot. I will answer questions as truthfully as possible in a single sentence. If you ask me a question I am unsure about, is nonsense, or has no clear answer, I will respond with "PASS".'
     respond_preamble = 'This is an ongoing intelligent and fun conversation happening on a twitch stream chat. This is the transcript:'
+
+    haiku_system_prompt = """
+        Complete the haiku following the examples provided.
+        A haiku must be exactly 3 lines with proper syllable structure.
+        Output all 3 lines of the haiku, nothing more.
+        """
+
+    best3_system_prompt = """
+        Complete the top 3 list following the examples provided.
+        Output exactly 3 items numbered 1, 2, and 3.
+        Be concise but complete all 3 items.
+        """
     question_prefix = 'Q:'
     answer_prefix = 'A:'
     qa_pair_delimiter = '###'
@@ -121,18 +133,8 @@ class Oracle(completer.Completer):
         return
 
     def complete_haiku(self, topic):
-        haiku_system_prompt = """
-            Complete the haiku following the examples provided.
-            A haiku must be exactly 3 lines with proper syllable structure.
-            Output all 3 lines of the haiku, nothing more.
-            """
-        return self.complete(haiku(topic.strip()), stops = ["TOPIC"], system_prompt=haiku_system_prompt).strip()
+        return self.complete(haiku(topic.strip()), stops = ["TOPIC"], system_prompt=self.haiku_system_prompt).strip()
 
     def complete_best3(self, topic):
-        best3_system_prompt = """
-            Complete the top 3 list following the examples provided.
-            Output exactly 3 items numbered 1, 2, and 3.
-            Be concise but complete all 3 items.
-            """
-        return self.complete(best3(topic.strip()), stops = ['4.'], system_prompt=best3_system_prompt).strip()
+        return self.complete(best3(topic.strip()), stops = ['4.'], system_prompt=self.best3_system_prompt).strip()
 
