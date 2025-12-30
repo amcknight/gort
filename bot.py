@@ -258,7 +258,7 @@ class Bot(commands.Bot):
             time.sleep(0.5)
             await ctx.send(f"/me {line.strip()}")
 
-    @commands.command()
+    @commands.command(aliases=['top'])
     async def best(self, ctx, *args):
         if not self.active: return
         topic = ' '.join(ctx.args).strip()
