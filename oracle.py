@@ -121,8 +121,18 @@ class Oracle(completer.Completer):
         return
 
     def complete_haiku(self, topic):
-        return self.complete(haiku(topic.strip()), stops = ["TOPIC"]).strip()
+        haiku_system_prompt = """
+            Complete the haiku following the examples provided.
+            A haiku must be exactly 3 lines with proper syllable structure.
+            Output all 3 lines of the haiku, nothing more.
+            """
+        return self.complete(haiku(topic.strip()), stops = ["TOPIC"], system_prompt=haiku_system_prompt).strip()
 
     def complete_best3(self, topic):
-        return self.complete(best3(topic.strip()), stops = ['4.']).strip()
+        best3_system_prompt = """
+            Complete the top 3 list following the examples provided.
+            Output exactly 3 items numbered 1, 2, and 3.
+            Be concise but complete all 3 items.
+            """
+        return self.complete(best3(topic.strip()), stops = ['4.'], system_prompt=best3_system_prompt).strip()
 
